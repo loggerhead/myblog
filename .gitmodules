@@ -1,0 +1,9 @@
+[submodule "nginx-config"]
+	path = nginx-config
+	url = https://git.coding.net/loggerhead/myblog-nginx.git
+[submodule "update-site"]
+	path = update-site
+	url = https://git.coding.net/loggerhead/myblog-update.git
+[submodule "pelican-config"]
+	path = pelican-config
+	url = https://git.coding.net/loggerhead/myblog-pelican.git
