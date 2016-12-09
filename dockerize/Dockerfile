@@ -10,8 +10,8 @@ RUN apt-get -y update ;\
                        git aria2 python-pip python-dev ;\
     apt-get clean && rm -r /var/lib/apt/lists/* ;\
     pip install flask supervisor ;\
-    mkdir -p /var/www/blog/cert ;\
-    git clone https://git.coding.net/loggerhead/myblog-nginx.git /etc/nginx ;\
+    mkdir -p /var/www/blog/cert
+RUN git clone https://git.coding.net/loggerhead/myblog-nginx.git /etc/nginx ;\
     git clone https://git.coding.net/loggerhead/myblog-update.git /var/www/blog/myblog-update ;\
     git clone https://git.coding.net/loggerhead/blog.loggerhead.me.git /var/www/blog/output
 
