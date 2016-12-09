@@ -1,0 +1,676 @@
+<!Doctype html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+<meta name="renderer" content="webkit">
+<meta name="HandheldFriendly" content="True">
+<meta name="google-site-verification" content="xRiYQAQ0h0n3RXqrq0GgrdFm3BMFqDvDwwiRylv0YhQ">
+
+<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/android-chrome-192x192.png" sizes="192x192">
+<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+<meta name="theme-color" content="#ffffff">
+<meta name="author" content="loggerhead" />    <meta name="keywords" content="源码分析,Python" />
+
+  <meta name="description" content="Shadowsocks 是一款著名的 SOCKS5 代理工具，深受人民群众喜爱。它的源码工程质量很高，十分便于研究。不过当你真正开始读源码的时候，会有一种似懂非懂的感觉，因为虽然它的大体框架容易理解，但是其中的诸多细节却不是那么简单明了。 本文将基于 2.9.0 版本的源码对 shadowsocks 进行分析，希望读者看完以后能对 shadowsocks 的原理有个大体上的认识。为了行文简洁，在示例中我们用 ss 指代 shadowsocks。 SOCKS5 协议 握手阶段 建立连接 传输阶段 整体..." />
+
+  <title>  Shadowsocks 源码分析
+</title>
+
+<link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="../theme/css/style.1cd8932.css">
+ 
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+  <link href="../atom.xml" rel="alternate" type="application/atom+xml">
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="..">loggerhead's blog</a>
+    </div>
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../archives.html">归档</a></li>
+        <li><a href="../404.html">关于</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/loggerhead" target="_blank">GitHub</a></li>
+        <li><a href="https://www.hackerrank.com/loggerhead" target="_blank">HackerRank</a></li>
+        <li><a href="https://douban.com/people/loggerhead" target="_blank">豆瓣</a></li>
+      </ul>
+    </div><!--/.navbar-header -->
+  </div><!--/.container -->
+</nav><!--/.navbar -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="markdown-body article-list">
+  <section id="content">
+    <article>
+      <header class="page-header">
+        <h1>
+          <a class="article-title" href="../posts/shadowsocks-yuan-ma-fen-xi.html" rel="bookmark" title="Permalink to Shadowsocks 源码分析">
+            Shadowsocks 源码分析
+          </a>
+        </h1>
+<footer class="post-info">
+  <div class="row">
+    <div class="col-xs-8">
+      <!-- <span class="label label-default">Tags</span> -->
+        <a class="tag btn btn-xs" href="../tag/yuan-ma-fen-xi.html">
+          源码分析
+        </a>
+        <a class="tag btn btn-xs" href="../tag/python.html">
+          Python
+        </a>
+    </div>
+
+    <div class="col-xs-4 time">
+      <time class="pull-right" datetime="2016-12-06T21:00:00+08:00">
+        2016-12-06
+      </time>
+    </div>
+  </div>
+</footer>        <hr>
+      </header>
+      <div class="entry-content">
+        <p><a href="https://github.com/shadowsocks/shadowsocks/tree/master">Shadowsocks</a> 是一款著名的 SOCKS5 代理工具，深受人民群众喜爱。它的源码工程质量很高，十分便于研究。不过当你真正开始读源码的时候，会有一种似懂非懂的感觉，因为虽然它的大体框架容易理解，但是其中的诸多细节却不是那么简单明了。</p>
+<p>本文将基于 <a href="https://github.com/loggerhead/shadowsocks/tree/8e8ee5d490ce319b8db9b61001dac51a7da4be63">2.9.0 版本的源码</a>对 shadowsocks 进行分析，希望读者看完以后能对 shadowsocks 的原理有个大体上的认识。为了行文简洁，在示例中我们用 ss 指代 shadowsocks。</p>
+<div class="toc">
+<ul>
+<li><a href="#socks5">SOCKS5 协议</a><ul>
+<li><a href="#_1">握手阶段</a></li>
+<li><a href="#_2">建立连接</a></li>
+<li><a href="#_3">传输阶段</a></li>
+</ul>
+</li>
+<li><a href="#_4">整体结构</a></li>
+<li><a href="#eventlooppy">eventloop.py</a></li>
+<li><a href="#tcprelaypy">tcprelay.py</a><ul>
+<li><a href="#tcprelay">TCPRelay</a></li>
+<li><a href="#tcprelayhandler">TCPRelayHandler</a></li>
+</ul>
+</li>
+</ul>
+</div>
+
+
+<h1 id="socks5">SOCKS5 协议</h1>
+<p>无论是实现什么网络应用，首当其冲的就是确定通讯协议。SOCKS5 协议作为一个同时支持 TCP 和 UDP 的应用层协议（<a href="https://www.ietf.org/rfc/rfc1928.txt">RFC</a> 只有短短的 7 页），因为其简单易用的特性而被 shadowsocks 青睐。我们先从 SOCKS5 协议入手，一点一点剖析 shadowsocks。</p>
+<h2 id="_1">握手阶段</h2>
+<p>客户端和服务器在握手阶段协商认证方式，比如：是否采用用户名/密码的方式进行认证，或者不采用任何认证方式。</p>
+<p>客户端发送给服务器的消息格式如下（数字表示对应字段占用的字节数）：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span>+----+----------+----------+
+|VER | NMETHODS | METHODS  |
++----+----------+----------+
+| 1  |    1     |  1~255   |
++----+----------+----------+
+</pre></div>
+</td></tr></table>
+
+<ul>
+<li><code>VER</code> 字段是当前协议的版本号，也就是 <code>5</code>；</li>
+<li><code>NMETHODS</code> 字段是 <code>METHODS</code> 字段占用的字节数；</li>
+<li><code>METHODS</code> 字段的每一个字节表示一种认证方式，表示客户端支持的全部认证方式。</li>
+</ul>
+<p>服务器在收到客户端的协商请求后，会检查是否有服务器支持的认证方式，并返回客户端如下格式的消息：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span>+----+--------+
+|VER | METHOD |
++----+--------+
+| 1  |   1    |
++----+--------+
+</pre></div>
+</td></tr></table>
+
+<p>对于 shadowsocks 而言，返回给客户端的值只有两种可能：</p>
+<ul>
+<li><code>0x05 0x00</code>：告诉客户端采用无认证的方式建立连接；</li>
+<li><code>0x05 0xff</code>：客户端的任意一种认证方式服务器都不支持。</li>
+</ul>
+<p>举个例子，就 shadowsocks 而言，最简单的握手可能是这样的：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>client -&gt; ss: 0x05 0x01 0x00
+ss -&gt; client: 0x05 0x00
+</pre></div>
+</td></tr></table>
+
+<p>如果客户端 <strong>还支持</strong> 用户名/密码的认证方式，那么握手会是这样子：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>client -&gt; ss: 0x05 0x02 0x00 0x02
+ss -&gt; client: 0x05 0x00
+</pre></div>
+</td></tr></table>
+
+<p>如果客户端 <strong>只支持</strong> 用户名/密码的认证方式，那么握手会是这样子：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>client -&gt; ss: 0x05 0x01 0x02
+ss -&gt; client: 0x05 0xff
+</pre></div>
+</td></tr></table>
+
+<h2 id="_2">建立连接</h2>
+<p>完成握手后，客户端会向服务器发起请求，请求的格式如下：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span>+----+-----+-------+------+----------+----------+
+|VER | CMD |  RSV  | ATYP | DST.ADDR | DST.PORT |
++----+-----+-------+------+----------+----------+
+| 1  |  1  |   1   |  1   | Variable |    2     |
++----+-----+-------+------+----------+----------+
+</pre></div>
+</td></tr></table>
+
+<ul>
+<li><code>CMD</code> 字段：<code>command</code> 的缩写，shadowsocks 只用到了：<ul>
+<li><code>0x01</code>：建立 TCP 连接</li>
+<li><code>0x03</code>：关联 UDP 请求</li>
+</ul>
+</li>
+<li><code>RSV</code> 字段：保留字段，值为 <code>0x00</code>；</li>
+<li><code>ATYP</code> 字段：<code>address type</code> 的缩写，取值为：<ul>
+<li><code>0x01</code>：IPv4</li>
+<li><code>0x03</code>：域名</li>
+<li><code>0x04</code>：IPv6</li>
+</ul>
+</li>
+<li><code>DST.ADDR</code> 字段：<code>destination address</code> 的缩写，取值随 <code>ATYP</code> 变化：<ul>
+<li><code>ATYP == 0x01</code>：4 个字节的 IPv4 地址</li>
+<li><code>ATYP == 0x03</code>：1 个字节表示域名长度，紧随其后的是对应的域名</li>
+<li><code>ATYP == 0x04</code>：16 个字节的 IPv6 地址</li>
+</ul>
+</li>
+<li><code>DST.PORT</code> 字段：目的服务器的端口</li>
+</ul>
+<p>在收到客户端的请求后，服务器会返回如下格式的消息：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span>+----+-----+-------+------+----------+----------+
+|VER | REP |  RSV  | ATYP | BND.ADDR | BND.PORT |
++----+-----+-------+------+----------+----------+
+| 1  |  1  |   1   |  1   | Variable |    2     |
++----+-----+-------+------+----------+----------+
+</pre></div>
+</td></tr></table>
+
+<ul>
+<li><code>REP</code> 字段：用以告知客户端请求处理情况。在请求处理成功的情况下，shadowsocks 将这个字段的值设为 <code>0x00</code>，否则，shadowsocks 会直接断开连接；</li>
+<li>其它字段和请求中字段的取值类型一样。</li>
+</ul>
+<p>举例来说，如果客户端通过 shadowsocks 代理 <code>127.0.0.1:8000</code> 的请求，那么客户端和 shadowsocks 之间的请求和响应是这样的：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">#    request: VER  CMD  RSV  ATYP DST.ADDR            DST.PORT </span>
+client -&gt; ss: 0x05 0x01 0x00 0x01 0x7f 0x00 0x00 0x01 0x1f 0x40
+<span class="c1">#   response: VER  REP  RSV  ATYP BND.ADDR            BND.PORT</span>
+ss -&gt; client: 0x05 0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x10 0x10
+</pre></div>
+</td></tr></table>
+
+<p>这里 <code>0x7f 0x00 0x00 0x01 0x1f 0x40</code> 对应的是 <code>127.0.0.1:8000</code>。需要注意的是，当请求中的 <code>CMD == 0x01</code> 时，绝大部分 SOCKS5 客户端的实现都会忽略 SOCKS5 服务器返回的 <code>BND.ADDR</code> 和 <code>BND.PORT</code> 字段，所以这里的 <code>0x00 0x00 0x00 0x00 0x10 0x10</code> 只是 shadowsocks 返回的一个无意义的地址和端口<sup id="fnref:bnd.addr"><a class="footnote-ref" href="#fn:bnd.addr" rel="footnote">1</a></sup>。</p>
+<h2 id="_3">传输阶段</h2>
+<p>SOCKS5 协议只负责建立连接，在完成握手阶段和建立连接之后，SOCKS5 服务器就只做简单的转发了。假如客户端通过 shadowsocks 代理 <code>google.com:80</code>（用 <code>remote</code> 表示），那么整个过程如图所示：</p>
+<p><img alt="socks example" src="../_images/socks5-example.svg" /></p>
+<p>整个过程中发生的传输可能是这样的：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># 握手阶段</span>
+client -&gt; ss: 0x05 0x01 0x00
+ss -&gt; client: 0x05 0x00
+<span class="c1"># 建立连接</span>
+client -&gt; ss: 0x05 0x01 0x00 0x03 0x0a b<span class="s1">&#39;google.com&#39;</span>  0x00 0x50
+ss -&gt; client: 0x05 0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x10 0x10
+<span class="c1"># 传输阶段</span>
+client -&gt; ss -&gt; remote
+remote -&gt; ss -&gt; client
+...
+</pre></div>
+</td></tr></table>
+
+<p><code>b'google.com'</code> 表示 <code>google.com</code> 对应的 ASCII 码。 </p>
+<h1 id="_4">整体结构</h1>
+<p>在进一步了解 shadowsocks 的内部构造之前，我们粗略的看一下各个模块分别做了些什么：</p>
+<ul>
+<li><code>tcprelay.py</code>：核心部分，整个 SOCKS5 协议的实现都在这里。负责 TCP 代理的实现；</li>
+<li><code>udprelay.py</code>：负责 UDP 代理的实现；</li>
+<li><code>asyncdns.py</code>：实现了简单的异步 DNS 查询；</li>
+<li><code>eventloop.py</code>：封装了三种常见的 IO 复用函数——<code>epoll</code>、<code>kqueue</code> 和 <code>select</code>，提供统一的接口；</li>
+<li><code>encrypt.py</code>：提供统一的加密解密接口；</li>
+<li><code>crypto</code>：封装了多种加密库的调用，包括 OpenSSL 和 libsodium；</li>
+<li><code>daemon.py</code>：用于实现守护进程；</li>
+<li><code>shell.py</code>：读取命令行参数，检查配置；</li>
+<li><code>common.py</code>：提供一些工具函数，比如：将 <code>bytes</code> 转换成 <code>str</code>、解析 SOCKS5 请求；</li>
+<li><code>lru_cache.py</code>：实现了 <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">LRU 缓存</a>；</li>
+<li><code>local.py</code>：shadowsocks 客户端（即 <code>sslocal</code> 命令）的入口；</li>
+<li><code>server.py</code>：shadowsocks 服务器（即 <code>ssserver</code> 命令）的入口。</li>
+</ul>
+<p>sslocal 和 ssserver 复用了绝大部分的代码，所以两者的运行流程都可以用伪代码表示为：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># local.py or server.py</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># 解析命令行和配置文件中的参数</span>
+    <span class="n">conf</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">parse_config</span><span class="p">()</span>
+    <span class="c1"># 根据配置决定要不要以守护进程的方式运行</span>
+    <span class="n">daemon</span><span class="o">.</span><span class="n">daemonize</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+
+    <span class="n">loop</span> <span class="o">=</span> <span class="n">eventloop</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+    <span class="n">tcp_server</span> <span class="o">=</span> <span class="n">tcprelay</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+    <span class="n">udp_server</span> <span class="o">=</span> <span class="n">udprelay</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+    <span class="n">dns_resolver</span> <span class="o">=</span> <span class="n">asyncdns</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+
+    <span class="c1"># 将 TCPRelay、UDPRelay 和 DNSResolver 注册到事件循环中</span>
+    <span class="n">tcp_server</span><span class="o">.</span><span class="n">add_to_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
+    <span class="n">udp_server</span><span class="o">.</span><span class="n">add_to_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
+    <span class="n">dns_resolver</span><span class="o">.</span><span class="n">add_to_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
+
+    <span class="n">loop</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="c1"># eventloop.py 中 loop.run 的实现</span>
+<span class="k">def</span> <span class="nf">loop_run</span><span class="p">():</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">wait_for_events</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">handler</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+            <span class="c1"># handler 是 TCPRelay、UDPRelay 或 DNSResolver</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">handle_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>有一点需要提一下：<strong>代理和能翻墙的代理是不一样的</strong>。比如，下图是普通的 SOCKS5 代理：</p>
+<p><img alt="normal-proxy" src="../_images/normal-proxy.svg" /></p>
+<p>而能翻墙的 SOCKS5 代理是下图这种结构：</p>
+<p><img alt="ss-proxy" src="../_images/ss-proxy.svg" /></p>
+<p>可以看出来，SOCKS5 服务器的实现被拆分成了两部分：</p>
+<ul>
+<li>sslocal 负责与 SOCKS5 客户端进行 SOCKS5 协议相关的通讯（握手并建立连接），在建立连接后将 SOCKS5 客户端发来的数据加密并发送给 ssserver；</li>
+<li>ssserver 起到一个中继的作用，负责解密以后将数据转发给目标服务器，并不涉及 SOCKS5 协议的任何一部分。</li>
+</ul>
+<p>其中一个重要的环节就是加密解密——数据经过 sslocal（本机）加密以后转发给 ssserver（VPS），这也是普通代理和能翻墙的代理的区别。在了解到这一点以后，shadowsocks 的很多细节就容易理解了。下面我们分模块，对 shadowsocks 内部机理一探究竟。</p>
+<h1 id="eventlooppy">eventloop.py</h1>
+<p><code>eventloop.py</code> 封装了三种常见的 IO 复用函数——<code>epoll</code>、<code>kqueue</code> 和 <code>select</code>，提供统一的接口，如果你没用过或者不知道它们是什么，那么你可能得先了解一下。其中主要的逻辑在于 <code>run</code> 的实现：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stopping</span><span class="p">:</span>
+        <span class="c1"># as soon as possible</span>
+        <span class="n">asap</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="c1"># 获取事件</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">poll</span><span class="p">(</span><span class="n">TIMEOUT_PRECISION</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">errno_from_exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EPIPE</span><span class="p">,</span> <span class="n">errno</span><span class="o">.</span><span class="n">EINTR</span><span class="p">):</span>
+                <span class="c1"># EPIPE: Happens when the client closes the connection</span>
+                <span class="c1"># EINTR: Happens when received a signal</span>
+                <span class="c1"># handles them as soon as possible</span>
+                <span class="n">asap</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;poll:</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;poll:</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="kn">import</span> <span class="nn">traceback</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                <span class="k">continue</span>
+        <span class="c1"># 找到事件对应的 handler，将事件交由它处理</span>
+        <span class="k">for</span> <span class="n">sock</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+            <span class="c1"># 通过 fd 找到对应的 handler</span>
+            <span class="c1"># 一个 handler 可能对应多个 fd（reactor 模式）</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fdmap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">handler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">handler</span> <span class="o">=</span> <span class="n">handler</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># handler 可能是 TCPRelay、UDPRelay 或 DNSResolver</span>
+                    <span class="n">handler</span><span class="o">.</span><span class="n">handle_event</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">shell</span><span class="o">.</span><span class="n">print_exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="c1"># 计时器。每隔 10s 调用注册的 handle_periodic 函数</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">asap</span> <span class="ow">or</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_time</span> <span class="o">&gt;=</span> <span class="n">TIMEOUT_PRECISION</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_periodic_callbacks</span><span class="p">:</span>
+                <span class="n">callback</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_time</span> <span class="o">=</span> <span class="n">now</span>
+</pre></div>
+</td></tr></table>
+
+<p><code>run</code> 是一个典型的事件循环，它会等待注册事件的发生，然后通过事件对应的 <code>fd</code> 找到 <code>handler</code>，调用 <code>handler.handle_event(sock, fd, event)</code> 来将事件交由 <code>handler</code> 处理，同时每隔 10 秒调用 <code>TCPRelay</code>、<code>UDPRelay</code> 或 <code>DNSResolver</code> 的 <code>handle_periodic</code> 函数处理超时或清除缓存。</p>
+<h1 id="tcprelaypy">tcprelay.py</h1>
+<p>Shadowsocks 采用了反应器模式（<a href="https://en.wikipedia.org/wiki/Reactor_pattern">reactor pattern</a>）。以下图为例：</p>
+<p><img alt="ss-reactor-pattern" src="../_images/ss-reactor-pattern.png" /></p>
+<p><code>TCPRelayHandler</code> 的事件会由 <code>EventLoop</code> 分发给 <code>TCPRelay</code>，再经由 <code>TCPRelay</code> 将事件分发给相应的 <code>TCPRelayHandler</code> 处理。这个过程发生在 <code>EventLoop</code> 和 <code>TCPRelay</code> 的 <code>handle_event</code> 函数。</p>
+<h2 id="tcprelay">TCPRelay</h2>
+<p>我们去掉其中的日志处理和错误处理逻辑，看看 <code>handle_event</code> 函数：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">handle_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sock</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+    <span class="c1"># 如果是 TCPRelay 的 socket</span>
+    <span class="k">if</span> <span class="n">sock</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server_socket</span><span class="p">:</span>
+        <span class="n">conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server_socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+        <span class="n">TCPRelayHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fd_to_handlers</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_eventloop</span><span class="p">,</span> <span class="n">conn</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_dns_resolver</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_local</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># 找到 fd 对应的 TCPRelayHandler</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fd_to_handlers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">handler</span><span class="p">:</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">handle_event</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>逻辑很简单，如果发生事件（可读事件）的 socket 是 <code>TCPRelay</code> 的 socket，说明有新的 TCP 连接，创建一个 <code>TCPRelayHandler</code> 对象将新连接封装起来。否则，找到发生事件的 <code>TCPRelayHandler</code>，将事件交给它处理。</p>
+<h2 id="tcprelayhandler">TCPRelayHandler</h2>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:bnd.addr">
+<p>也有部分 SOCKS5 服务器的实现返回全零&#160;<a class="footnote-backref" href="#fnref:bnd.addr" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+      </div>
+    </article>
+  </section>
+<div id="disqus_thread"></div>
+<script>
+var disqus_config = function () {
+    this.page.identifier = "Shadowsocks 源码分析";
+};
+
+(function() {
+    var d = document, s = d.createElement('script');
+    s.async = true;
+    s.src = "//loggerhead.disqus.com/embed.js";
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+})();
+</script>      </div>
+    </div>
+  </div>
+</div>
+
+ <footer class="page-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-8">
+        <p>
+          &copy;2016&nbsp; <a href="..">loggerhead</a>
+        </p>
+      </div>
+      <div class="col-xs-4">
+        <p class="pull-right">
+          <a href="#" class="back-to-top">
+            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+            回到顶部
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <div class="row hidden-when-phone">
+      <div class="col-xs-8">
+        <p>
+          <a href="http://www.miitbeian.gov.cn/" target="_blank">粤ICP备16007488号</a>
+          &middot; Powered by <a href="https://github.com/getpelican/pelican" target="_blank">Pelican</a>
+        </p>
+
+        <p>
+          本站文章均为原创，并遵循 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh_TW" target="_blank">CC BY-SA 4.0 协议</a>
+        </p>
+      </div><!--/.col-xs-8 -->
+
+      <div class="col-xs-4">
+        <p class="pull-right">
+          <a href="https://www.upyun.com/zh/league.html" target="_blank">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAAtCAMAAAAZUYxJAAAAtFBMVEUAAABPrtxPrtxPrtxPrtxPrtxlZ2ZlZ2ZPrtxlZ2ZRqdRlZ2ZPrtxPrtxPrtxPrtxPrtxlZ2ZPrtxlZ2ZPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxlZ2ZPrtxPrtxPrtxlZ2ZlZ2ZPrtxlZ2ZlZ2ZPrtxPrtxlZ2ZlZ2ZlZ2ZlZ2ZlZ2ZPrtxPrtxlZ2ZPrtxlZ2ZlZ2ZlZ2ZPrtxPrtxlZ2ZPrtxlZ2bPPWi/AAAAOnRSTlMAgNCQ8aAQcD8fA/FPMevhsDD5wLp1cCHZypmHOwyrooFTGhLh0sSwinlfXfju67yMRyfcooZ4RS0XProUtAAAAZlJREFUSMft02tT4jAUxvHTNtAaobjd3iyUq1zE1V1dr0++//fypMGZCrbw1jG/N2nD8KcTTsmyLOvH6sUC4Tio7fxWyufll1KKqKu0P7fLpy7veUCHlwAAfxMYELsAHKIOtCiMe2TICQxPNqeNq7OjaWNGlX+Ixo4TAxg2p6e+/8jL32PpVZomLnBJWhZdzomNQiBrTJ/x3Y1ej6Q9XQIi0tJwQZUAGC7KlrS8VermhHS/+khuR8U17cRg+bYxTUvePTUtL+5p0iejdIJ5vwCKxqc+3z315IR0wsftLMgwB51Uf+9aqc1B2uf1gYbAapc2x1p+mc4nfDGnOikQE015jje+v6lNyPPaTMgMQJGmXpUuIyBO0tQ9SFdDIumTAf4Tvd0p43CupYsP1eQaB2mBF9oTmKF8WF+dGybNF3fLaZfYYpgLAGbCZOIKg6ehEEK/Gq98R2OIraS6Xqh//zNz1ntmQEgtMgGEbg2HkZet6Z6ndQbAmNr0c+xbZdSa9rATZtRK3l87dcmIqD2duJXYmZNlWZb17b0DTmto7227YPgAAAAASUVORK5CYII=" />
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+    <script src="../theme/js/bag.2.0.2.min.js"></script>
+
+<script id="myscripts">
+bag = new window.Bag();
+
+bag.require([
+    "//cdn.bootcss.com/jquery/2.2.1/jquery.min.js",
+    "//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"
+]);
+
+function load_css(url, done) {
+    var link  = document.createElement('link');
+    link.rel  = 'stylesheet';
+    link.href = url;
+    link.onload = done;
+    document.head.appendChild(link);
+}
+
+function load_js(url, done) {
+    var script = document.createElement('script');
+    script.src = url;
+    script.onload = done;
+    document.body.appendChild(script);
+}
+
+function gestureStart() {
+    for (i = 0; i < metas.length; i++) {
+        if (metas[i].name == "viewport") {
+            metas[i].content = "width=device-width, minimum-scale=0.25, maximum-scale=1.6";
+        }
+    }
+}
+
+(function screen_suit() {
+    var metas = document.getElementsByTagName('meta');
+    var ua = navigator.userAgent;
+    if (ua.match(/iPhone/i)) {
+        for (var i = 0; i < metas.length; i++) {
+            if (metas[i].name == "viewport") {
+                metas[i].content = "width=device-width, minimum-scale=1.0, maximum-scale=1.0";
+            }
+        }
+        document.addEventListener("gesturestart", gestureStart, false);
+    }
+})();
+
+// See https://gist.github.com/vartan/ab195e5a502a47e0c3e5
+(function fix_hover_behavior() {
+    if('ontouchstart' in document.documentElement) {
+        for(var sheetI = document.styleSheets.length - 1; sheetI >= 0; sheetI--) {
+            var sheet = document.styleSheets[sheetI];
+            if(sheet.cssRules) {
+                for(var ruleI = sheet.cssRules.length - 1; ruleI >= 0; ruleI--) {
+                    var rule = sheet.cssRules[ruleI];
+                    if(rule.selectorText) {
+                        rule.selectorText = rule.selectorText.replace(":hover", ":active");
+                    }
+                }
+            }
+        }
+    }
+})();
+
+(function add_class_to_chinese_em(class_name) {
+    var ems = document.getElementsByTagName("em");
+
+    for (var i = 0; i < ems.length; i++) {
+        var text = ems[i].textContent;
+        // if has chinese char
+        if(/.*[\u4e00-\u9fa5]+.*$/.test(text)) {
+            ems[i].className += " " + class_name;
+        }
+    }
+})('chinese');
+
+// IE10 viewport hack for Surface/desktop Windows 8 bug
+(function fix_ie10_viewport_bug() {
+    if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+        bag.require([
+            "//maxcdn.bootstrapcdn.com/css/ie10-viewport-bug-workaround.css",
+            "//maxcdn.bootstrapcdn.com/js/ie10-viewport-bug-workaround.js"
+        ]);
+    }
+})();
+
+(function load_katex_when_need(class_name) {
+    var maths = document.getElementsByClassName(class_name);
+    if (maths.length == 0) {
+        return;
+    }
+
+    bag.require([
+        "//cdn.bootcss.com/KaTeX/0.6.0/katex.min.js"
+    ]).then(function() {
+        for (var i = 0; i < maths.length; i++) {
+            var math = maths[i];
+
+            var displayMode = null;
+            if (math.tagName == "SPAN") {
+                displayMode = false;
+            } else if (math.tagName == "DIV") {
+                displayMode = true;
+            }
+
+            if (displayMode === null) {
+                console.log("Cannot render " + math);
+            } else {
+                try {
+                    katex.render(math.textContent, maths[i], { displayMode: displayMode });
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        }
+    });
+
+    load_css("//cdn.bootcss.com/KaTeX/0.6.0/katex.min.css");
+})("math");
+</script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+  <script>
+  bag.require([
+    "//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js",
+    "//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"
+  ]);
+  </script>
+<![endif]-->
+ 
+</body>
+</html>

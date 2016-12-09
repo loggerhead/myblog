@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {{ super() }}
+{% endblock %}
+
+{% block content %}
+  {% if articles %}
+    {% for article in (articles_page.object_list if articles_page else articles) %}
+      <article>
+        <header class="page-header">
+          <h2><a class="article-title" href="{{ SITEURL }}/{{ article.url }}">{{ article.title }}</a></h2>
+          {% include "includes/article_info.html" %}
+        </header>
+        <div class="sep"></div>
+        <div class="summary">
+          {{ article.summary }}
+        </div>
+        <div>
+          <a class="btn btn-default btn-sm" href="{{ SITEURL }}/{{ article.url }}">
+              查看全文
+          </a>
+        </div>
+      </article>
+      <hr>
+    {% endfor %}
+  {% endif %}
+{% endblock %}
+
+{% block content_footer %}
+  {% if articles_page.has_next() or articles_page.has_previous() %}
+    {% include 'includes/pagination.html' %}
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,77 @@
+<!Doctype html>
+<html lang="zh-cn">
+<head>
+  {% include 'includes/meta.html' %}
+  {% block extra_meta %}
+    <meta name="description" content="{{ SITE_DESCRIPTION }}" />
+  {% endblock %}
+
+  <title>{% block title %}{{ SITENAME }}{% endblock %}</title>
+
+  {% include 'includes/base-styles.html' %}
+  {% block css %} {% endblock %}
+
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+  {% include 'includes/feeds.html' %}
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{{ SITEURL }}">{{ SITENAME }}</a>
+    </div>
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+      <ul class="nav navbar-nav">
+      {% for title, link in MENUITEMS %}
+        <li{% if link in (self|string) %} class="active"{% endif %}><a href="{{ SITEURL }}/{{ link }}">{{ title }}</a></li>
+      {% endfor %}
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+      {% if 'tipue_search' in PLUGINS %}
+        <li>
+          <span>
+            <form class="navbar-search" action="{{ SEARCH_URL | default('/search.html') }}">
+              <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input" required>
+            </form>
+          </span>
+        </li>
+      {% endif %}
+      {% for title, link in SOCIAL %}
+        <li><a href="{{ link }}" target="_blank">{{ title }}</a></li>
+      {% endfor %}
+      </ul>
+    </div><!--/.navbar-header -->
+  </div><!--/.container -->
+</nav><!--/.navbar -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="markdown-body article-list">
+        {% block content %} {% endblock %}
+        {% block content_footer %} {% endblock %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block footer %} {% endblock footer %}
+{% include 'includes/footer.html' %}
+
+{% include 'includes/base-script.html' %}
+
+{% block script %} {% endblock %}
+
+{% if ENABLE_GOOGLE_ANALYTICS %}
+  {% include 'includes/google-analytics.html'%}
+{% endif %}
+</body>
+</html>

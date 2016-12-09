@@ -1,0 +1,691 @@
+<!Doctype html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+<meta name="renderer" content="webkit">
+<meta name="HandheldFriendly" content="True">
+<meta name="google-site-verification" content="xRiYQAQ0h0n3RXqrq0GgrdFm3BMFqDvDwwiRylv0YhQ">
+
+<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/android-chrome-192x192.png" sizes="192x192">
+<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+<meta name="theme-color" content="#ffffff">
+<meta name="author" content="loggerhead" />    <meta name="keywords" content="翻译,Erlang,编程语言" />
+
+  <meta name="description" content="原文：Erlang and code style--Musings on mostly defensive programming styles" />
+
+  <title>  Erlang 和编码风格--对大多数防御性编码风格的思考
+</title>
+
+<link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="../theme/css/style.1cd8932.css">
+ 
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+  <link href="../atom.xml" rel="alternate" type="application/atom+xml">
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="..">loggerhead's blog</a>
+    </div>
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../archives.html">归档</a></li>
+        <li><a href="../404.html">关于</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/loggerhead" target="_blank">GitHub</a></li>
+        <li><a href="https://www.hackerrank.com/loggerhead" target="_blank">HackerRank</a></li>
+        <li><a href="https://douban.com/people/loggerhead" target="_blank">豆瓣</a></li>
+      </ul>
+    </div><!--/.navbar-header -->
+  </div><!--/.container -->
+</nav><!--/.navbar -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="markdown-body article-list">
+  <section id="content">
+    <article>
+      <header class="page-header">
+        <h1>
+          <a class="article-title" href="../posts/erlang-he-bian-ma-feng-ge-dui-da-duo-shu-fang-yu-xing-bian-ma-feng-ge-de-si-kao.html" rel="bookmark" title="Permalink to Erlang 和编码风格--对大多数防御性编码风格的思考">
+            Erlang 和编码风格--对大多数防御性编码风格的思考
+          </a>
+        </h1>
+<footer class="post-info">
+  <div class="row">
+    <div class="col-xs-8">
+      <!-- <span class="label label-default">Tags</span> -->
+        <a class="tag btn btn-xs" href="../tag/fan-yi.html">
+          翻译
+        </a>
+        <a class="tag btn btn-xs" href="../tag/erlang.html">
+          Erlang
+        </a>
+        <a class="tag btn btn-xs" href="../tag/bian-cheng-yu-yan.html">
+          编程语言
+        </a>
+    </div>
+
+    <div class="col-xs-4 time">
+      <time class="pull-right" datetime="2015-09-20T12:09:00+08:00">
+        2015-09-20
+      </time>
+    </div>
+  </div>
+</footer>        <hr>
+      </header>
+      <div class="entry-content">
+        <p>原文：<a href="https://medium.com/@jlouis666/erlang-and-code-style-b5936dceb5e4">Erlang and code style--Musings on mostly defensive programming styles</a></p>
+
+
+<hr />
+<blockquote>
+<p>Correct Erlang usage mandates you do not write any kind of defensive code. This is called <em>intentional programming</em>. You write code for the intentional control flow path which you expect the code to take. And you don’t write any code for the paths which you think are not possible. Furthermore, you don’t write code for data flow which was not the intention of the program.</p>
+</blockquote>
+<p>正确的 Erlang 编程方式要求你不写任何防御性代码<sup id="fnref:defensive code"><a class="footnote-ref" href="#fn:defensive code" rel="footnote">1</a></sup>，即所谓的 <em>意图编程</em><sup id="fnref:intentional programming"><a class="footnote-ref" href="#fn:intentional programming" rel="footnote">2</a></sup>。你给能够抵达意图且会被执行的控制流路径编写代码，并且不对不可能到达的逻辑编写任何代码。而且，你不会为与程序意图无关的数据流编写代码。</p>
+<h1 id="14">结果证明防御性编程很蠢<sup id="fnref:title1"><a class="footnote-ref" href="#fn:title1" rel="footnote">14</a></sup></h1>
+<blockquote>
+<p>If an Erlang program goes wrong, it crashes. Say we are opening a file. We can <em>guard</em> the file open call like so:</p>
+</blockquote>
+<p>如果 Erlang 程序发生错误，它就崩溃。假如我们要打开一个文件，我们能 <em>断言</em> 打开文件的调用，像这样：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Fd</span><span class="p">}</span> <span class="o">=</span> <span class="nn">file</span><span class="p">:</span><span class="nf">open</span><span class="p">(</span><span class="nv">Filename</span><span class="p">,</span> <span class="p">[</span><span class="n">raw</span><span class="p">,</span> <span class="n">binary</span><span class="p">,</span> <span class="n">read</span><span class="p">,</span> <span class="n">read_ahead</span><span class="p">]),</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>What happens if the file doesn’t exist? Well the process crashes. But note we did not have to write any code for that path. The default in Erlang is to crash when a match isn’t valid. We get a badmatch error with a reason as to why we could not open the file.</p>
+</blockquote>
+<p>如果文件不存在，会发生什么？进程崩溃。但是请注意，我们不需要写任何代码来做到这一点。当匹配无效的时候，Erlang 的默认行为就是崩溃。我们会获得一个错误匹配的错误，并给出我们不能打开这个文件的原因。</p>
+<blockquote>
+<p>A process crashing is not a problem. The <em>program</em> is still operating and supervision--An important fault-tolerance concept in Erlang--will make sure that we try again in a little while. Say we have introduced a race condition on the file open, by accident. If it happens rarely, the program would still run, even if the file open fails from time to time.</p>
+</blockquote>
+<p>进程崩溃不是问题，问题是 <em>程序</em> 会继续操作，监视器（一个在 Erlang 中重要的错误容忍概念）会在一小段时间后再次尝试。假如在打开文件时，我们不小心引入了一个竞争条件。如果这种情况很少发生，程序仍会继续运行，即使打开文件的操作一次又一次的失败。</p>
+<blockquote>
+<p>You will often see code that looks like:</p>
+</blockquote>
+<p>你会经常见到像这样的代码：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">ok</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(...),</span>
+<span class="n">ok</span> <span class="o">=</span> <span class="n">bar</span><span class="p">(...),</span>
+<span class="n">ok</span> <span class="o">=</span> <span class="p">...</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>which then asserts that each of these calls went well, making sure code crashes if the control and data flow is not what is expected.</p>
+</blockquote>
+<p>它断言所有的调用都会成功，确保控制流和数据流如果不是所期望的，代码就崩溃。</p>
+<blockquote>
+<p>Notice the complete lack of error handling. We don’t write</p>
+</blockquote>
+<p>注意，完全没有错误处理。我们不写这样的代码：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="n">foo</span><span class="p">(...)</span> <span class="k">of</span>
+    <span class="n">ok</span> <span class="o">-&gt;</span> <span class="k">case</span> <span class="n">bar</span><span class="p">(...)</span> <span class="k">of</span> <span class="p">...</span> <span class="k">end</span><span class="p">;</span>
+    <span class="p">{</span><span class="n">error</span><span class="p">,</span> <span class="nv">Reason</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="n">throw</span><span class="p">({</span><span class="n">error</span><span class="p">,</span> <span class="nv">Reason</span><span class="p">})</span>
+<span class="k">end</span><span class="p">,</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>Nor do we fall into the trap of the Go programming language and write:</p>
+</blockquote>
+<p>也不会落入 Go 语言的圈套中，写出像这样的代码：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">foo</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nb">panic</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nx">res2</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">bar</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nb">panic</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>because this is also plain silly, tedious and cumbersome to write.</p>
+</blockquote>
+<p>因为这同样很蠢，并且写起来又累赘又乏味。</p>
+<blockquote>
+<p>The key is that we have a crash-effect in the Erlang interpreter which we can invoke where the <em>default</em> is to crash the process if something goes wrong. And have another process clean up. Good Erlang code abuses this fact as much as possible.</p>
+</blockquote>
+<p>关键在于 Erlang 解释器能使进程崩溃，如果发生错误，它 <em>默认</em> 让进程崩溃，并且让另一个进程进行清理。漂亮的 Erlang 代码会尽可能的使用这个作用。</p>
+<h1 id="15">意图？<sup id="fnref:title2"><a class="footnote-ref" href="#fn:title2" rel="footnote">15</a></sup></h1>
+<blockquote>
+<p>Note the word intentional. In some cases, we <em>do</em> expect calls to fail. So we just handle it like everyone else would, but since we can emulate sum-types in Erlang, we can do better than languages with no concept of a sum-type:</p>
+</blockquote>
+<p>注意「意图」这个词。在某些情况下，我们 <em>的确</em> 希望函数调用失败。于是我们像其他所有人一样去处理失败的函数调用，但是因为我们在 Erlang 中能模拟 sum-types<sup id="fnref:sum-types"><a class="footnote-ref" href="#fn:sum-types" rel="footnote">3</a></sup>，所以我们能比那些没有 sum-type 的语言做得更好：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="nn">file</span><span class="p">:</span><span class="nf">open</span><span class="p">(</span><span class="nv">Filename</span><span class="p">,</span> <span class="p">[</span><span class="n">raw</span><span class="p">,</span> <span class="n">read</span><span class="p">,</span> <span class="n">binary</span><span class="p">])</span> <span class="k">of</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Fd</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="p">...;</span>
+    <span class="p">{</span><span class="n">error</span><span class="p">,</span> <span class="n">enoent</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="p">...</span>
+<span class="k">end</span><span class="p">,</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>Here we have written down the intention that the file might not exist. However:</p>
+<ul>
+<li>We <em>only</em> worry about non existence.</li>
+<li>We crash on <em>eaccess</em> which means an access error due to permissions.</li>
+<li>Likewise for <em>eisdir, enotdir, enospc</em>.</li>
+</ul>
+</blockquote>
+<p>我们在上述代码中写下了文件可能不存在的意图。然而：</p>
+<ul>
+<li>我们 <em>仅仅</em> 关心文件不存在的情况。</li>
+<li>我们希望在遇到 <em>eaccess</em> 时崩溃，表示因为权限的关系，发生了访问错误。</li>
+<li>我们希望在遇到 <em>eisdir, enotdir, enospc</em> 时的行为也和 <em>eaccess</em> 一样。</li>
+</ul>
+<h1 id="_1">为什么？</h1>
+<blockquote>
+<p>Leaner code, that’s why.</p>
+</blockquote>
+<p>精炼的代码，这就是为什么。</p>
+<blockquote>
+<p>We can skip lots of defensive code which often more than halves the code size of projects. There are much less code to maintain so when we refactor, we need to manipulate less code as well.</p>
+</blockquote>
+<p>我们能减少许多防御性代码，这些防御性代码经常超过项目代码量的一半。所以当我们重构时，需要维护的代码少很多，同时，需要我们掌控的代码也更少。</p>
+<blockquote>
+<p>Our code is not littered with things having nothing to do with the “normal” code flow. This makes it far easier to read code and determine what is going on.</p>
+</blockquote>
+<p>我们的代码不是和“正常”代码流无关的垃圾。这使得代码非常易读，并且非常容易确定发生了什么。</p>
+<blockquote>
+<p>Erlang process crashes gives lots of information when something dies. For a proper OTP process, we get the State of the process before it died and what message was sent to it that triggered the crash. A dump of this is enough in about 50% of all cases and you can reproduce the error just by looking at the crash dump. In effect, this eliminates a lot of silly logging code.</p>
+</blockquote>
+<p>当什么东西挂了的时候，Erlang 进程的崩溃提供了很多信息。对一个良好的 OTP 进程，在它挂掉之前，我们会得到进程的状态，也会得到发送给它并导致它崩溃的消息。在 50% 的情况下，这个过程的堆能提供足够的信息，并且仅仅通过观察崩溃进程的堆就能重现错误。事实上，这减少了许多蠢蠢的日志记录代码。</p>
+<h1 id="16">数据流防御性编程<sup id="fnref:title3"><a class="footnote-ref" href="#fn:title3" rel="footnote">16</a></sup></h1>
+<blockquote>
+<p>Another common way of messing up Erlang programs is to mangle incoming data through pattern matching. Stuff like the following:</p>
+</blockquote>
+<p>另一种将 Erlang 程序弄成一团糟的常见方法是使用模式匹配把传入的数据弄乱。像下面这样：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nf">convert</span><span class="p">(</span><span class="nv">I</span><span class="p">)</span> <span class="k">when</span> <span class="nb">is_integer</span><span class="p">(</span><span class="nv">I</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">I</span><span class="p">;</span>
+<span class="nf">convert</span><span class="p">(</span><span class="nv">F</span><span class="p">)</span> <span class="k">when</span> <span class="nb">is_float</span><span class="p">(</span><span class="nv">F</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">round</span><span class="p">(</span><span class="nv">F</span><span class="p">);</span>
+<span class="nf">convert</span><span class="p">(</span><span class="nv">L</span><span class="p">)</span> <span class="k">when</span> <span class="nb">is_list</span><span class="p">(</span><span class="nv">L</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list_to_integer</span><span class="p">(</span><span class="nv">L</span><span class="p">).</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>The function will convert “anything” to an integer. Then you proceed to use it:</p>
+</blockquote>
+<p>这个函数会把“任何东西”转换成整数。接着你会使用它：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nf">process</span><span class="p">(</span><span class="nv">Anything</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">I</span> <span class="o">=</span> <span class="n">convert</span><span class="p">(</span><span class="nv">Anything</span><span class="p">),</span> <span class="p">...</span><span class="nv">I</span><span class="p">...</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>The problem here is not with the <strong>process</strong> function, but with the call-sites of the <strong>process</strong> function. Each call-site has a different opinion on what data is being passed in this code. This leads to a situation where every subsystem handles conversions like these.</p>
+</blockquote>
+<p>问题不在于 <strong>process</strong> 函数，而在于对 <strong>process</strong> 函数的调用。每次调用都得用不同的观点来看待传进这段代码的数据，导致子系统都得像这样对数据进行转换。</p>
+<blockquote>
+<p>There are several disguises of this anti-pattern. Here is another smell:</p>
+</blockquote>
+<p>这种反模式有几种伪装。下面是另外一种“充满臭味”的代码：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nf">convert</span><span class="p">({</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">})</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">};</span>
+<span class="nf">convert</span><span class="p">(</span><span class="nv">B</span><span class="p">)</span> <span class="k">when</span> <span class="nb">is_binary</span><span class="p">(</span><span class="nv">B</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="p">[</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">]</span> <span class="o">=</span> <span class="nn">binary</span><span class="p">:</span><span class="nf">split</span><span class="p">(</span><span class="nv">B</span><span class="p">,</span> <span class="o">&lt;&lt;</span><span class="s">&quot;-&quot;</span><span class="o">&gt;&gt;</span><span class="p">),</span>
+    <span class="p">{</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">}.</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>This is stringified programming where all data are pushed into a string and then manually deconstructed at each caller. It leads to a lot of ugly code with little provision for extension later.</p>
+</blockquote>
+<p>这叫字符串编程，将所有的数据放入同一个字符串，并且每个调用者都去手动解构该字符串。这种编程方式会产生一大坨丑陋的代码，并且几乎没有扩展性。</p>
+<blockquote>
+<p>Rather than trying to handle different types, enforce the invariant early on the api:</p>
+</blockquote>
+<p>与其尝试处理不同类型的数据，不如在 API 中尽早的强制数据不可变：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nf">process</span><span class="p">(</span><span class="nv">I</span><span class="p">)</span> <span class="k">when</span> <span class="nb">is_integer</span><span class="p">(</span><span class="nv">I</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">...</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>And then <em>never</em> test for correctness inside your subsystem. The dialyzer is good at inferring the use of <em>I</em> as an integer. Littering your code with <strong>is_integer</strong> tests is not going to buy you anything. If something is wrong in your subsystem, the code will crash, and you can go handle the error.</p>
+</blockquote>
+<p>并且 <em>绝不要</em> 在子系统中测试数据的正确性，推断出 <em>I</em> 作为整数使用是解析器所擅长的工作。代码中杂乱分布的 <strong>is_integer</strong> 测试不会让你付出任何代价，并且如果在你的子系统中什么东西出错了，它会让你的代码崩溃，然后你就能处理这个错误了。</p>
+<blockquote>
+<p>There is something to be said about static typing here, which will force you out of this unityped world very easily. In a statically typed language, I could still obtain the same thing, but then I would have to define something along the lines of (* Standard ML code follows *)</p>
+</blockquote>
+<p>这里需要谈一谈静态类型，静态类型很容易强迫你脱离单一类型。在静态类型语言中，仍能得到同样的东西，但是我必须定义某些与下面几行类似的东西（* 下面是标准 ML 代码 *）</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kr">datatype</span> <span class="kt">anything</span> <span class="p">=</span> <span class="nc">INT</span> <span class="kr">of</span> <span class="n">int</span>
+                  <span class="p">|</span> <span class="nc">STRING</span> <span class="kr">of</span> <span class="n">string</span>
+                  <span class="p">|</span> <span class="nc">REAL</span> <span class="kr">of</span> <span class="n">real</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>and so on. This quickly becomes hard to write pattern matches for, so hence people only defines the <em>anything</em> type if they really need it. (Gilad Bracha was partially right when he identified this as a run-time check on the value, but what he omitted was the fact that the programmer has the decision to avoid a costly runtime check all the time—come again, Gilad ☺).</p>
+</blockquote>
+<p>或者更多这种东西。为它编写模式匹配的代码很快就变得困难重重，因此如果有人真的需要模式匹配，他就会只定义一个 <em>任意</em> 类型。（当 Gilad Bracha 把它当做是值的运行时检查时，他只是部分正确，他所忽略的事实是——程序员总是有权避免昂贵的运行时检查。又来了，Gilad ☺）</p>
+<h1 id="undefined">undefined 的祸害</h1>
+<blockquote>
+<p>Another important smell is that of the <em>undefined</em> value. The story here is that undefined is often used to program a Option/Maybe monad. That is, we have the type</p>
+</blockquote>
+<p>另一种主要的“充满臭味”的代码是那些使用 <em>undefined</em> 的代码。这是指 undefined 经常被用来编写可选的或可能的 monad。也就是说，我们有如下的类型</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">-</span><span class="ni">type</span> <span class="n">option</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="p">::</span> <span class="n">undefined</span> <span class="p">|</span> <span class="p">{</span><span class="n">value</span><span class="p">,</span> <span class="nv">A</span><span class="p">}.</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>[For the static typists out there: Erlang <em>does</em> have a type system based on success types for figuring out errors, and the above is one such type definition]</p>
+</blockquote>
+<p>[对于待在那儿的静态类型们：Erlang <em>确实</em> 有基于成功类型<sup id="fnref:success types"><a class="footnote-ref" href="#fn:success types" rel="footnote">4</a></sup>的类型系统来找出错误，上面的代码就是这样一种类型定义]</p>
+<blockquote>
+<p>It is straightforward to define reflection/reification into an exception-effect for these. Jakob Sievers <code>stdlib2</code> library already does this, as well as define the monadic helper called <strong>do</strong> (Though the monad is of the Error-type rather than Option).</p>
+</blockquote>
+<p>给这些静态类型将反射<sup id="fnref:reflection"><a class="footnote-ref" href="#fn:reflection" rel="footnote">6</a></sup>或具体化定义到一个异常作用中很简单。Jakob Sievers 的 <code>stdlib2</code> 库已经实现了这一点，并定义了一个叫做 <strong>do</strong> 的 monadic helper（虽然这个 monad 是错误类型而不是 Option<sup id="fnref:option type"><a class="footnote-ref" href="#fn:option type" rel="footnote">5</a></sup>）。</p>
+<blockquote>
+<p>But I’ve seen:</p>
+</blockquote>
+<p>但是我看到了这样的代码：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">-</span><span class="ni">spec</span> <span class="n">do_x</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ty</span><span class="p">()</span> <span class="p">|</span> <span class="n">undefined</span>
+  <span class="k">when</span> <span class="nv">X</span> <span class="p">::</span> <span class="n">undefined</span> <span class="p">|</span> <span class="n">integer</span><span class="p">().</span>
+<span class="nf">do_x</span><span class="p">(</span><span class="n">undefined</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">undefined</span><span class="p">;</span>
+<span class="nf">do_x</span><span class="p">(</span><span class="nv">I</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">...</span><span class="nv">I</span><span class="p">....</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>Which leads to complicated code. You need to be 100% in control of what values can fail and what values can not. Constructions like the above silently passes undefined on. This has its uses--but be wary when you see code like this. The <em>undefined</em> value is essentially a <em>NULL</em>. And those were C.A.R Hoare’s billion dollar mistake.</p>
+</blockquote>
+<p>这种方式导致代码变得复杂。你需要 100% 的控制哪些值能够失败，哪些不能。与上述结构类似的结构会悄悄的传递 undefined。虽然这种方式有适用之处，但是看到这样的代码的时候要小心。<em>undefined</em> 本质上是一种 <em>NULL</em>，而 NULL 又是「C.A.R Hoare 的百万美元错误」<sup id="fnref:C.A.R Hoare’s billion dollar mistake"><a class="footnote-ref" href="#fn:C.A.R Hoare’s billion dollar mistake" rel="footnote">7</a></sup></p>
+<blockquote>
+<p>The problem is that the above code is <em>nullable</em>. The default in Erlang is that you never have NULL-like values. Introducing them again should be used sparingly. You will have to think long and hard because once a value is nullable, it is up to you to check this all the time. This tend to make code convoluted and complicated. It is better to test such things up front and then leave it out of the main parts of the code base as much as possible.</p>
+</blockquote>
+<p>问题是上述代码是 <em>类 NULL 的</em>。Erlang 默认绝不出现类似 NULL 的值，所以应该小心翼翼的再次引入它们。你必须仔细并慎重的考虑要不要引入它们，因为一旦一个值是类 NULL 的，那你就得从始至终的检查它。这种做法很容易让代码变得错综复杂。最好是在一开始就测试这些值，然后让它尽可能的远离代码的主要部分。</p>
+<h1 id="_2">「开放」数据表示法</h1>
+<blockquote>
+<p>Whenever you have a data structure, there is a set of modules which knows about and operates on that data structure. If there is only a single module, you can emulate a common pattern from Standard ML or OCaml where the concrete data structure representation is abstract for most of the program and only a single module can operate on the abstract type.</p>
+</blockquote>
+<p>无论什么时候，只要有数据结构存在，就一定有一系列模块知道这个数据结构的存在并在它上面进行操作。如果只有一个模块，你可以参照标准 ML 或 OCaml<sup id="fnref:ML_OCaml"><a class="footnote-ref" href="#fn:ML_OCaml" rel="footnote">8</a></sup> 模拟一个通用模式，这两种语言的数据结构表达对于大部分程序都是抽象的，并且只存在单一模块能操作这些抽象类型。</p>
+<blockquote>
+<p>This is not entirely true in Erlang, where anyone can introspect any data. But keeping the illusion is handy for maintainability.</p>
+</blockquote>
+<p>Erlang 不完全是这样，任何人都能内省<sup id="fnref:introspect"><a class="footnote-ref" href="#fn:introspect" rel="footnote">9</a></sup>到任何数据，但是保持这一点让程序更容易维护。</p>
+<blockquote>
+<p>The more modules that can manipulate a data structure, the harder it is to alter that data structure. Consider this when putting a record in a header file. There are two levels of possible creeping insanity:</p>
+<ul>
+<li>You put the record definition in a header file in <strong>src</strong>. In this case only the application itself can see the records, so they don’t leak out.</li>
+<li>You put the record definition in a header file in <strong>include</strong>. In this case the record can leak out of the application and often will.</li>
+</ul>
+</blockquote>
+<p>可以操作一个数据结构的模块越多，替换这个数据结构的难度就越大。考虑将记录定义在头文件中的方式，有两种可能让人慢慢抓狂的做法：</p>
+<ul>
+<li>你把记录定义在 <strong>src</strong> 文件夹下的一个头文件中。在这种情况下，只有该应用能看到这些记录，所以它们不会泄露。</li>
+<li>你把记录定义在 <strong>include</strong> 文件夹下的一个头文件中。在这种情况下，记录可能从该应用中泄露出去，并且这种情况经常发生。</li>
+</ul>
+<blockquote>
+<p>A good example is the HTTP server <em>cowboy</em> where its request object is manipulated through the <strong>cowboy_req</strong> module. This means the internal representation can change while keeping the rest of the world stable on the module API.</p>
+</blockquote>
+<p>HTTP 服务器 <em>cowboy</em> 是个很好的例子，它通过 <strong>cowboy_req</strong> 模块操作 request 对象。这意味着即使内部数据结构的表示发生改变，基于 cowboy_req 模块的 API 的其它代码不受影响。</p>
+<blockquote>
+<p>There are cases where it makes sense to export records. But think before doing so. If a record is manipulated by several modules, chances are that you can win a lot by re-thinking the structure of the program.</p>
+</blockquote>
+<p>有时候导出记录是有用的，但是请仔细考虑后，再决定要不要这么做。如果同一个记录被多个模块所使用，可能重新考虑程序结构会更好。</p>
+<h1 id="true-false-atom">“true” 和 “false” 是 atom() 类型</h1>
+<blockquote>
+<p>As a final little nod, I see too much code looking like</p>
+</blockquote>
+<p>最后一小点，我看到很多像这样的代码：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nf">f</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">,</span> <span class="n">true</span><span class="p">,</span> <span class="n">false</span><span class="p">,</span> <span class="n">true</span><span class="p">,</span> <span class="n">true</span><span class="p">),</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>Which is hard to read. Since this is Erlang, you can just use a better name for the true and false values. Just pick an atom which makes sense and then produce that atom. It also has the advantage to catch more bugs early on if arguments get swapped by accident. Also note you can bind information to the result, by passing tuples. There is much to be said about the concept of <em>boolean blindness</em> which in typical programs means to rely too much on boolean() values. The problem is that if you get a <em>true</em> say, you don’t know why it was true. You want <em>evidence</em> as to its truth. And this can be had by passing this evidence in a tuple. As an example, we can have a function like this:</p>
+</blockquote>
+<p>这种代码的可读性很低。因为这是 Erlang 代码，所以可以采用更恰当的命名来表示 true 和 false。选一个有意义的 atom，把它用在那儿。这样做的另一个好处是，如果不小心交换了参数的位置，你能尽早的捕捉到更多的 bug。还要注意，通过传递元组，你可以绑定信息到函数返回值中。关于 <em>boolean 盲目</em> 有很多可说的，它意味着在典型程序中过分依赖于 boolean() 值。问题在于如果你表示了一个 <em>true</em> 值，你不知道为什么它是真，你需要 <em>迹象</em> 来表露这一点<sup id="fnref:true_or_false"><a class="footnote-ref" href="#fn:true_or_false" rel="footnote">10</a></sup>。可以通过在元组中传递这个迹象来表明为什么是 true。比如，我们有个函数像这样：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="nn">api</span><span class="p">:</span><span class="nf">resource_exists</span><span class="p">(</span><span class="nv">ID</span><span class="p">)</span> <span class="k">of</span>
+    <span class="n">true</span> <span class="o">-&gt;</span> <span class="nv">Resource</span> <span class="o">=</span> <span class="nn">api</span><span class="p">:</span><span class="nf">fetch_resource</span><span class="p">(</span><span class="nv">ID</span><span class="p">),</span> <span class="p">...;</span>
+    <span class="n">false</span> <span class="o">-&gt;</span> <span class="p">...</span>
+<span class="k">end</span><span class="p">.</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>But we could also write it in a more direct style:</p>
+</blockquote>
+<p>但是我们可以用更直接了当的方式写出来：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="nn">api</span><span class="p">:</span><span class="nf">fetch_resource</span><span class="p">(</span><span class="nv">ID</span><span class="p">)</span> <span class="k">of</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Resource</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="p">...;</span>
+    <span class="n">not_found</span> <span class="o">-&gt;</span> <span class="p">...</span>
+<span class="k">end</span><span class="p">.</span>
+</pre></div>
+</td></tr></table>
+
+<blockquote>
+<p>(<strong>Edit:</strong> I originally used the function name <code>resource_exists</code> above but Richard Carlsson correctly points out this is a misleading name. So I changed it to something with a better name)</p>
+</blockquote>
+<p>（<strong>修改：</strong> 我原本是在上述例子中使用 <code>resource_exists</code> 作为函数名，但是 Richard Carlsson 指出它具有误导性。因此我改了个更好的函数名）</p>
+<blockquote>
+<p>which in the long run is less error prone. We can’t by accident call the <em>fetch_resource</em> call and if we look up the resource, we also get hold of the evidence of what the resource is. If we don’t really want to use the resource, we can just throw it away.</p>
+</blockquote>
+<p>这种方式在长远看来更少出错。我们不会意外的调用 <em>fetch_resource</em> 函数，并且如果查找资源，我们能同时获得迹象，表明资源是什么。如果不是真的打算使用这个资源，可以简单的丢弃它。</p>
+<h1 id="_3">结束语</h1>
+<blockquote>
+<p>Rules of thumb exists to be broken. So once in a while they must be broken. However, I hope you learnt something or had to stop and reflect on something if you happened to get here (unless you scrolled past all the interesting stuff).</p>
+</blockquote>
+<p>经验规则就是用来被打破的。所以，偶尔必须打破这些规则。然而，我希望你学到一些东西，或者卡在某个地方的时候仔细思考（除非你跳过了<sup id="fnref:scrolled past"><a class="footnote-ref" href="#fn:scrolled past" rel="footnote">11</a></sup>所有这些有意思的东西）</p>
+<blockquote>
+<p>I am also interested in Pet-peeves of yours, if I am missing some. The way to become a better programmer is to study the style of others.</p>
+</blockquote>
+<p>我对文章中让你反感的东西<sup id="fnref:Pet-peeves"><a class="footnote-ref" href="#fn:Pet-peeves" rel="footnote">12</a></sup>也感兴趣，如果我没注意到它们，请告诉我。成为一个优秀程序员的方法是学习其他优秀程序员的风格<sup id="fnref:style"><a class="footnote-ref" href="#fn:style" rel="footnote">13</a></sup>。</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:defensive code">
+<p>防御性编程强调对错误防范于未然，未雨绸缪，对程序中任何可能出现错误的地方编写处理逻辑。参见<a href="https://zh.wikipedia.org/wiki/防御性编程">防御性编程</a>、<a href="http://www.codeceo.com/article/defensive-programming-vs-crazy-programming.html">防御性编程与疯狂偏执性编程</a>&#160;<a class="footnote-backref" href="#fnref:defensive code" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:intentional programming">
+<p>意图编程强调把注意力放在能有的，能实现意图的东西上。参见 <a href="https://en.wikipedia.org/wiki/Intentional_programming#Programming_Example">Intentional_programming</a>、<a href="http://book.51cto.com/art/201010/230850.htm">意图编程</a>&#160;<a class="footnote-backref" href="#fnref:intentional programming" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:sum-types">
+<p>一种用来表示多种不同类型的数据结构。详见：<a href="https://en.wikipedia.org/wiki/Tagged_union">Tagged_union</a>&#160;<a class="footnote-backref" href="#fnref:sum-types" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:success types">
+<p>success types 应该理解为「函数成功执行得到的返回值所具有的类型」，即与返回错误类型相对的类型&#160;<a class="footnote-backref" href="#fnref:success types" rev="footnote" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:option type">
+<p>这里的 Option 不是「可选」的意思，而是指 <a href="https://en.wikipedia.org/wiki/Option_type">option type</a>&#160;<a class="footnote-backref" href="#fnref:option type" rev="footnote" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:reflection">
+<p>反射是指程序在运行时可以访问、检测和修改它本身状态或行为的一种能力。详见 <a href="https://zh.wikipedia.org/wiki/反射_(计算机科学)">reflection</a>&#160;<a class="footnote-backref" href="#fnref:reflection" rev="footnote" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+<li id="fn:C.A.R Hoare’s billion dollar mistake">
+<p>详见 <a href="https://en.wikipedia.org/wiki/Tony_Hoare#Apologies_and_retractions">Tony Hoare</a> 和 <a href="http://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare">他的演讲</a>&#160;<a class="footnote-backref" href="#fnref:C.A.R Hoare’s billion dollar mistake" rev="footnote" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+</li>
+<li id="fn:ML_OCaml">
+<p>两种函数式语言&#160;<a class="footnote-backref" href="#fnref:ML_OCaml" rev="footnote" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+</li>
+<li id="fn:introspect">
+<p>内省就是运行时类型检查。详见 <a href="https://zh.wikipedia.org/wiki/内省_(计算机科学)">内省</a>、<a href="https://en.wikipedia.org/wiki/Type_introspection">type introspection</a> 和 <a href="https://www.opengl.org/wiki/Program_Introspection">program introspection</a>&#160;<a class="footnote-backref" href="#fnref:introspect" rev="footnote" title="Jump back to footnote 9 in the text">&#8617;</a></p>
+</li>
+<li id="fn:true_or_false">
+<p>作者的意思是 true 和 false 是对称的，用 true 的地方也能用 false 替代，那么为什么要用 true 而不是 false 呢？所以需要上下文提供额外的信息来说明为什么用 true。&#160;<a class="footnote-backref" href="#fnref:true_or_false" rev="footnote" title="Jump back to footnote 10 in the text">&#8617;</a></p>
+</li>
+<li id="fn:scrolled past">
+<p>scrolled past 意为「在浏览器中往下滚动，从而跳过了某些内容」&#160;<a class="footnote-backref" href="#fnref:scrolled past" rev="footnote" title="Jump back to footnote 11 in the text">&#8617;</a></p>
+</li>
+<li id="fn:Pet-peeves">
+<p>Pet-peeves 是指「厌恶的东西」。作者可能是指某些编程风格的派系之争，类似与「PHP 是世界上最好的语言 :)」&#160;<a class="footnote-backref" href="#fnref:Pet-peeves" rev="footnote" title="Jump back to footnote 12 in the text">&#8617;</a></p>
+</li>
+<li id="fn:style">
+<p>这里的 style 可能是指「优秀程序员的编码风格」，也可能是指「优秀程序员的编码风格和做事方式」&#160;<a class="footnote-backref" href="#fnref:style" rev="footnote" title="Jump back to footnote 13 in the text">&#8617;</a></p>
+</li>
+<li id="fn:title1">
+<p>原文：It is an effect, silly&#160;<a class="footnote-backref" href="#fnref:title1" rev="footnote" title="Jump back to footnote 14 in the text">&#8617;</a></p>
+</li>
+<li id="fn:title2">
+<p>原文：Intentional?&#160;<a class="footnote-backref" href="#fnref:title2" rev="footnote" title="Jump back to footnote 15 in the text">&#8617;</a></p>
+</li>
+<li id="fn:title3">
+<p>原文：Data flow defensive programming&#160;<a class="footnote-backref" href="#fnref:title3" rev="footnote" title="Jump back to footnote 16 in the text">&#8617;</a></p>
+</li>
+<li id="fn:title4">
+<p>原文：The scourge of undefined&#160;<a class="footnote-backref" href="#fnref:title4" rev="footnote" title="Jump back to footnote 17 in the text">&#8617;</a></p>
+</li>
+<li id="fn:title5">
+<p>原文：“Open” data representations&#160;<a class="footnote-backref" href="#fnref:title5" rev="footnote" title="Jump back to footnote 18 in the text">&#8617;</a></p>
+</li>
+<li id="fn:title6">
+<p>原文：The values ‘true’ and ‘false’ are of type atom()&#160;<a class="footnote-backref" href="#fnref:title6" rev="footnote" title="Jump back to footnote 19 in the text">&#8617;</a></p>
+</li>
+<li id="fn:title7">
+<p>原文：Closing remarks&#160;<a class="footnote-backref" href="#fnref:title7" rev="footnote" title="Jump back to footnote 20 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+      </div>
+    </article>
+  </section>
+<div id="disqus_thread"></div>
+<script>
+var disqus_config = function () {
+    this.page.identifier = "Erlang 和编码风格--对大多数防御性编码风格的思考";
+};
+
+(function() {
+    var d = document, s = d.createElement('script');
+    s.async = true;
+    s.src = "//loggerhead.disqus.com/embed.js";
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+})();
+</script>      </div>
+    </div>
+  </div>
+</div>
+
+ <footer class="page-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-8">
+        <p>
+          &copy;2016&nbsp; <a href="..">loggerhead</a>
+        </p>
+      </div>
+      <div class="col-xs-4">
+        <p class="pull-right">
+          <a href="#" class="back-to-top">
+            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+            回到顶部
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <div class="row hidden-when-phone">
+      <div class="col-xs-8">
+        <p>
+          <a href="http://www.miitbeian.gov.cn/" target="_blank">粤ICP备16007488号</a>
+          &middot; Powered by <a href="https://github.com/getpelican/pelican" target="_blank">Pelican</a>
+        </p>
+
+        <p>
+          本站文章均为原创，并遵循 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh_TW" target="_blank">CC BY-SA 4.0 协议</a>
+        </p>
+      </div><!--/.col-xs-8 -->
+
+      <div class="col-xs-4">
+        <p class="pull-right">
+          <a href="https://www.upyun.com/zh/league.html" target="_blank">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAAtCAMAAAAZUYxJAAAAtFBMVEUAAABPrtxPrtxPrtxPrtxPrtxlZ2ZlZ2ZPrtxlZ2ZRqdRlZ2ZPrtxPrtxPrtxPrtxPrtxlZ2ZPrtxlZ2ZPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxlZ2ZPrtxPrtxPrtxlZ2ZlZ2ZPrtxlZ2ZlZ2ZPrtxPrtxlZ2ZlZ2ZlZ2ZlZ2ZlZ2ZPrtxPrtxlZ2ZPrtxlZ2ZlZ2ZlZ2ZPrtxPrtxlZ2ZPrtxlZ2bPPWi/AAAAOnRSTlMAgNCQ8aAQcD8fA/FPMevhsDD5wLp1cCHZypmHOwyrooFTGhLh0sSwinlfXfju67yMRyfcooZ4RS0XProUtAAAAZlJREFUSMft02tT4jAUxvHTNtAaobjd3iyUq1zE1V1dr0++//fypMGZCrbw1jG/N2nD8KcTTsmyLOvH6sUC4Tio7fxWyufll1KKqKu0P7fLpy7veUCHlwAAfxMYELsAHKIOtCiMe2TICQxPNqeNq7OjaWNGlX+Ixo4TAxg2p6e+/8jL32PpVZomLnBJWhZdzomNQiBrTJ/x3Y1ej6Q9XQIi0tJwQZUAGC7KlrS8VermhHS/+khuR8U17cRg+bYxTUvePTUtL+5p0iejdIJ5vwCKxqc+3z315IR0wsftLMgwB51Uf+9aqc1B2uf1gYbAapc2x1p+mc4nfDGnOikQE015jje+v6lNyPPaTMgMQJGmXpUuIyBO0tQ9SFdDIumTAf4Tvd0p43CupYsP1eQaB2mBF9oTmKF8WF+dGybNF3fLaZfYYpgLAGbCZOIKg6ehEEK/Gq98R2OIraS6Xqh//zNz1ntmQEgtMgGEbg2HkZet6Z6ndQbAmNr0c+xbZdSa9rATZtRK3l87dcmIqD2duJXYmZNlWZb17b0DTmto7227YPgAAAAASUVORK5CYII=" />
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+    <script src="../theme/js/bag.2.0.2.min.js"></script>
+
+<script id="myscripts">
+bag = new window.Bag();
+
+bag.require([
+    "//cdn.bootcss.com/jquery/2.2.1/jquery.min.js",
+    "//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"
+]);
+
+function load_css(url, done) {
+    var link  = document.createElement('link');
+    link.rel  = 'stylesheet';
+    link.href = url;
+    link.onload = done;
+    document.head.appendChild(link);
+}
+
+function load_js(url, done) {
+    var script = document.createElement('script');
+    script.src = url;
+    script.onload = done;
+    document.body.appendChild(script);
+}
+
+function gestureStart() {
+    for (i = 0; i < metas.length; i++) {
+        if (metas[i].name == "viewport") {
+            metas[i].content = "width=device-width, minimum-scale=0.25, maximum-scale=1.6";
+        }
+    }
+}
+
+(function screen_suit() {
+    var metas = document.getElementsByTagName('meta');
+    var ua = navigator.userAgent;
+    if (ua.match(/iPhone/i)) {
+        for (var i = 0; i < metas.length; i++) {
+            if (metas[i].name == "viewport") {
+                metas[i].content = "width=device-width, minimum-scale=1.0, maximum-scale=1.0";
+            }
+        }
+        document.addEventListener("gesturestart", gestureStart, false);
+    }
+})();
+
+// See https://gist.github.com/vartan/ab195e5a502a47e0c3e5
+(function fix_hover_behavior() {
+    if('ontouchstart' in document.documentElement) {
+        for(var sheetI = document.styleSheets.length - 1; sheetI >= 0; sheetI--) {
+            var sheet = document.styleSheets[sheetI];
+            if(sheet.cssRules) {
+                for(var ruleI = sheet.cssRules.length - 1; ruleI >= 0; ruleI--) {
+                    var rule = sheet.cssRules[ruleI];
+                    if(rule.selectorText) {
+                        rule.selectorText = rule.selectorText.replace(":hover", ":active");
+                    }
+                }
+            }
+        }
+    }
+})();
+
+(function add_class_to_chinese_em(class_name) {
+    var ems = document.getElementsByTagName("em");
+
+    for (var i = 0; i < ems.length; i++) {
+        var text = ems[i].textContent;
+        // if has chinese char
+        if(/.*[\u4e00-\u9fa5]+.*$/.test(text)) {
+            ems[i].className += " " + class_name;
+        }
+    }
+})('chinese');
+
+// IE10 viewport hack for Surface/desktop Windows 8 bug
+(function fix_ie10_viewport_bug() {
+    if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+        bag.require([
+            "//maxcdn.bootstrapcdn.com/css/ie10-viewport-bug-workaround.css",
+            "//maxcdn.bootstrapcdn.com/js/ie10-viewport-bug-workaround.js"
+        ]);
+    }
+})();
+
+(function load_katex_when_need(class_name) {
+    var maths = document.getElementsByClassName(class_name);
+    if (maths.length == 0) {
+        return;
+    }
+
+    bag.require([
+        "//cdn.bootcss.com/KaTeX/0.6.0/katex.min.js"
+    ]).then(function() {
+        for (var i = 0; i < maths.length; i++) {
+            var math = maths[i];
+
+            var displayMode = null;
+            if (math.tagName == "SPAN") {
+                displayMode = false;
+            } else if (math.tagName == "DIV") {
+                displayMode = true;
+            }
+
+            if (displayMode === null) {
+                console.log("Cannot render " + math);
+            } else {
+                try {
+                    katex.render(math.textContent, maths[i], { displayMode: displayMode });
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        }
+    });
+
+    load_css("//cdn.bootcss.com/KaTeX/0.6.0/katex.min.css");
+})("math");
+</script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+  <script>
+  bag.require([
+    "//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js",
+    "//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"
+  ]);
+  </script>
+<![endif]-->
+ 
+</body>
+</html>

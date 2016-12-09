@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {{ super() }}
+{% endblock %}
+
+{% block css %}
+<style>
+  html { background: rgba(101, 118, 144, 0.8); }
+  .mod_hd:hover { background: rgba(0, 0, 0, 0.2); }
+</style>
+{% endblock %}
+
+{% block content %}
+  <script src='http://www.qq.com/404/search_children.js' charset="utf-8" homePageUrl="/" homePageName="点击回到主页"></script>
+{% endblock %}
+
+{% block script %}
+<script>
+window.onload = function () {
+  var desc = document.getElementsByClassName("mod_hd")[0];
+  desc.onclick = function() {
+    location.href = '/';
+  };
+}
+</script>
+{% endblock %}

@@ -1,0 +1,738 @@
+<!Doctype html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+<meta name="renderer" content="webkit">
+<meta name="HandheldFriendly" content="True">
+<meta name="google-site-verification" content="xRiYQAQ0h0n3RXqrq0GgrdFm3BMFqDvDwwiRylv0YhQ">
+
+<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/android-chrome-192x192.png" sizes="192x192">
+<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+<meta name="theme-color" content="#ffffff">
+<meta name="author" content="loggerhead" />    <meta name="keywords" content="工具" />
+
+  <meta name="description" content="本文所介绍的内容大部分是 Pro Git 2nd Edition 第二、三章中出现的常用命令，如果你有时间，建议将此书看一遍。" />
+
+  <title>  快速回忆你用过的 Git
+</title>
+
+<link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="../theme/css/style.1cd8932.css">
+ 
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+  <link href="../atom.xml" rel="alternate" type="application/atom+xml">
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="..">loggerhead's blog</a>
+    </div>
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../archives.html">归档</a></li>
+        <li><a href="../404.html">关于</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/loggerhead" target="_blank">GitHub</a></li>
+        <li><a href="https://www.hackerrank.com/loggerhead" target="_blank">HackerRank</a></li>
+        <li><a href="https://douban.com/people/loggerhead" target="_blank">豆瓣</a></li>
+      </ul>
+    </div><!--/.navbar-header -->
+  </div><!--/.container -->
+</nav><!--/.navbar -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="markdown-body article-list">
+  <section id="content">
+    <article>
+      <header class="page-header">
+        <h1>
+          <a class="article-title" href="../posts/kuai-su-hui-yi-ni-yong-guo-de-git.html" rel="bookmark" title="Permalink to 快速回忆你用过的 Git">
+            快速回忆你用过的 Git
+          </a>
+        </h1>
+<footer class="post-info">
+  <div class="row">
+    <div class="col-xs-8">
+      <!-- <span class="label label-default">Tags</span> -->
+        <a class="tag btn btn-xs" href="../tag/gong-ju.html">
+          工具
+        </a>
+    </div>
+
+    <div class="col-xs-4 time">
+      <time class="pull-right" datetime="2015-07-02T15:22:38+08:00">
+        2015-07-02
+      </time>
+    </div>
+  </div>
+</footer>        <hr>
+      </header>
+      <div class="entry-content">
+        <p>本文所介绍的内容大部分是 <a href="https://git-scm.com/doc">Pro Git 2nd Edition</a> 第二、三章中出现的常用命令，如果你有时间，建议将此书看一遍。</p>
+
+
+<div class="toc">
+<ul>
+<li><a href="#_1">基本原理</a></li>
+<li><a href="#gitignore">.gitignore 文件</a><ul>
+<li><a href="#_2">模式规则</a><ul>
+<li><a href="#glob">Glob 模式</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_3">查看信息</a><ul>
+<li><a href="#-git-help-command">列出帮助信息 -- git help &lt;command&gt;</a></li>
+<li><a href="#-git-status">列出文件状态 -- git status</a><ul>
+<li><a href="#git-status-s">git status -s 示例</a></li>
+</ul>
+</li>
+<li><a href="#-git-log">查看提交历史 -- git log</a></li>
+<li><a href="#-git-diff">查看详细修改 -- git diff</a></li>
+</ul>
+</li>
+<li><a href="#_4">本地仓库</a><ul>
+<li><a href="#-git-init-directory">创建仓库 -- git init [directory]</a></li>
+<li><a href="#-git-add-pathspec">跟踪文件 -- git add [&lt;pathspec&gt;...]</a></li>
+<li><a href="#-git-rm-file">删除文件 -- git rm &lt;file&gt;...</a></li>
+<li><a href="#-git-mv-source-destination">重命名文件 -- git mv &lt;source&gt; &lt;destination&gt;</a></li>
+</ul>
+</li>
+<li><a href="#_5">状态变动</a><ul>
+<li><a href="#-git-stage-pathspec">暂存文件 -- git stage &lt;pathspec&gt;...</a></li>
+<li><a href="#-git-reset">取消暂存 -- git reset</a></li>
+<li><a href="#-git-commit">提交修改 -- git commit</a></li>
+</ul>
+</li>
+<li><a href="#_6">远程仓库</a><ul>
+<li><a href="#-git-clone-repository-directory">克隆远程仓库 -- git clone &lt;repository&gt; [&lt;directory&gt;]</a></li>
+<li><a href="#-git-remote">添加、删除、列出远程仓库 -- git remote</a></li>
+<li><a href="#-git-ls-remote-url">列出远程仓库的所有引用 -- git ls-remote [&lt;url&gt;]</a></li>
+<li><a href="#-git-push">更新远程仓库 -- git push</a></li>
+<li><a href="#-git-pull">下载并合并远程仓库的数据 -- git pull</a></li>
+<li><a href="#-git-fetch-remote">下载远程仓库的数据 -- git fetch [&lt;remote&gt;]</a></li>
+<li><a href="#_7">用远程仓库覆盖本地分支</a></li>
+<li><a href="#-git-submodule">子模块操作 -- git submodule</a></li>
+</ul>
+</li>
+<li><a href="#_8">分支操作</a><ul>
+<li><a href="#-git-branch">创建、删除、列出分支 -- git branch</a></li>
+<li><a href="#-git-checkout">切换分支 -- git checkout</a></li>
+<li><a href="#-git-tag">创建、删除、列出标签 -- git tag</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="_1">基本原理</h1>
+<p>Git 管理项目时，文件在三个区域转移：工作区，暂存区，以及本地仓库。</p>
+<p><img alt="git areas" src="https://dn-loggerhead.qbox.me/images/git-areas.png" /></p>
+<p>简单的说，工作区就是 <code>.git</code> 所在目录，暂存区就是 <code>.git/index</code> 文件，本地仓库就是 <code>.git</code> 目录。实际上，暂存区是一个包含文件索引的目录树，记录了文件的各种信息（文件名、文件长度、修改时间等），而文件内容则存放在 <code>.git/objects</code> 目录下。</p>
+<p><img alt="git stage" src="https://dn-loggerhead.qbox.me/images/git-stage.png" /></p>
+<p>Git 将 commit、文件、目录统统视为对象。对象以 <code>SHA1</code> 值作为指纹，与其他对象相区分，Git 命令操作的最小单位是对象。
+Git 会将文件的副本存放在 .git 文件夹下，每个文件都根据文件内容进行操作。</p>
+<p><img alt="git objects" src="https://dn-loggerhead.qbox.me/images/git-commit-and-tree.png" /></p>
+<p>由 Git 管理的文件始终在四种状态之间迁移，分别是：未跟踪（Untracked）、未修改（Unmodified）、已修改（Modified）或已暂存（Staged）。</p>
+<p><img alt="git file lifecycle" src="https://dn-loggerhead.qbox.me/images/git-lifecycle.png" /></p>
+<p>HEAD、分支（branch）、标签（tag）都是指针，均直接或间接指向相应的 commit。HEAD 始终指向当前分支，分支和标签指向对应的 commit。通过 <code>git cat-file -p &lt;SHA1&gt;</code> 可查看 commit 内容。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13</pre></div></td><td class="code"><div class="highlight"><pre><span></span>$ cat .git/HEAD
+ref: refs/heads/master
+$ cat refs/heads/master
+44181f5600579209649bf30c2dbe9227c68a3a58
+$ cat refs/tags/v0.1
+0d84e16dc2e19a309865202a4d2d2e267c1f315e
+$ git cat-file -p 0d84e16dc2e19a309865202a4d2d2e267c1f315e
+tree 7b2366b4fb6aa745d1ad542be660cab47ca6247e
+parent 0acf7329fb3dec0a4f4eef2ae0d6c0e376435300
+author loggerhead &lt;lloggerhead@gmail.com&gt; <span class="m">1434017010</span> +0800
+committer loggerhead &lt;lloggerhead@gmail.com&gt; <span class="m">1434017010</span> +0800
+
+add ldconfig explain
+</pre></div>
+</td></tr></table>
+
+<p><img alt="branch, tag and history" src="https://dn-loggerhead.qbox.me/images/git-branch-and-history.png" /></p>
+<h1 id="gitignore">.gitignore 文件</h1>
+<p>.gitignore 文件包含一些模式，用以描述不想跟踪的文件。</p>
+<h2 id="_2">模式规则</h2>
+<ul>
+<li>忽略空行 或 <code>#</code> 开头的行</li>
+<li>标准 glob 模式</li>
+<li><code>/</code> 开头避免递归</li>
+<li><code>/</code> 结尾表示目录</li>
+<li><code>!</code> 开头表示反转该模式.</li>
+</ul>
+<h3 id="glob">Glob 模式</h3>
+<ul>
+<li><code>*</code> 匹配大于等于0个字符</li>
+<li><code>[abc]</code> 匹配括号中的任意一个字符</li>
+<li><code>?</code> 匹配1个字符</li>
+<li><code>**</code> 匹配目录，如：<code>a/**/z</code> 会匹配 <code>a/z</code>、<code>a/b/z</code>、<code>a/b/c/z</code> 等等</li>
+</ul>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># 忽略所有的 .a 文件</span>
+*.a
+<span class="c1"># 不忽略 lib.a 文件, 即使上一条规则说了要忽略</span>
+!lib.a
+<span class="c1"># 仅仅忽略当前目录下的 TODO 文件</span>
+/TODO
+<span class="c1"># 忽略所有 build/ 目录下的文件</span>
+build/
+<span class="c1"># 忽略 doc/notes.txt, 但是不忽略 doc/server/arch.txt</span>
+doc/*.txt
+<span class="c1"># 忽略所有位于 doc/ 目录下的 .txt 文件</span>
+doc/**/*.txt
+</pre></div>
+</td></tr></table>
+
+<h1 id="_3">查看信息</h1>
+<h2 id="-git-help-command">列出帮助信息 -- <code>git help &lt;command&gt;</code></h2>
+<h2 id="-git-status">列出文件状态 -- <code>git status</code></h2>
+<p>列出处于未跟踪、已修改或已暂存状态的文件。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>git status
+git status -s
+git status --short
+</pre></div>
+</td></tr></table>
+
+<h3 id="git-status-s"><code>git status -s</code> 示例</h3>
+<p>输出分四栏，第一栏表示文件已暂存，第二栏表示文件已修改，第三栏是空格，第四栏是文件路径。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># git status -s</span>
+ M README               <span class="c1"># 已修改但未暂存</span>
+MM Rakefile             <span class="c1"># 已修改且已暂存，然后又被修改了</span>
+A  lib/git.rb           <span class="c1"># 新文件</span>
+M  lib/simplegit.rb     <span class="c1"># 已修改且已暂存</span>
+?? LICENSE.txt          <span class="c1"># 未跟踪</span>
+</pre></div>
+</td></tr></table>
+
+<h2 id="-git-log">查看提交历史 -- <code>git log</code></h2>
+<ul>
+<li><code>git log -p</code>: 查看提交历史和每次提交的详细修改</li>
+<li><code>git log -&lt;n&gt;</code>: 查看最近 n 次提交历史</li>
+<li><code>git log --stat</code>: 查看提交历史和每次提交的修改情况</li>
+<li><code>git log --since=1.weeks</code>: 查看最近一星期的提交历史</li>
+<li><code>git log --until=1.weeks</code>: 查看到上星期为止的提交历史</li>
+<li><code>git log --grep=hel.o</code>: 查看提交信息匹配 <code>hel.o</code> 的提交历史</li>
+<li><code>git log --author=f.o</code>: 查看作者名匹配 <code>f.o</code> 的提交历史</li>
+<li><code>git log -S&lt;string&gt;</code>: 查看改动过 <code>&lt;string&gt;</code> 的提交历史</li>
+</ul>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>git log --oneline --decorate --color --graph
+git log -Sfunction_name
+</pre></div>
+</td></tr></table>
+
+<h2 id="-git-diff">查看详细修改 -- <code>git diff</code></h2>
+<p>查看已修改文件的详细修改。</p>
+<ul>
+<li><code>git diff --staged</code>: 查看已暂存文件和最后一次提交（commit）相比的详细修改（<code>cached</code> 是 <code>staged</code> 的同义词）</li>
+</ul>
+<h1 id="_4">本地仓库</h1>
+<h2 id="-git-init-directory">创建仓库 -- <code>git init [directory]</code></h2>
+<p>创建仓库或重置已有仓库。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>git init
+git init .
+</pre></div>
+</td></tr></table>
+
+<h2 id="-git-add-pathspec">跟踪文件 -- <code>git add [&lt;pathspec&gt;...]</code></h2>
+<p>跟踪（track）新文件。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>git add .
+</pre></div>
+</td></tr></table>
+
+<h2 id="-git-rm-file">删除文件 -- <code>git rm &lt;file&gt;...</code></h2>
+<p>删除已跟踪且已提交的文件，并从工作区删除。</p>
+<ul>
+<li><code>git rm -f &lt;file&gt;</code>: 删除已跟踪的文件，并从工作区删除</li>
+<li><code>git rm --cached &lt;file&gt;</code>: 删除已跟踪的文件，但不从工作区删除</li>
+</ul>
+<p><code>git rm</code> 命令接受 glob 模式的参数，只不过 <code>*</code> 之前需要一个 <code>\</code>，因为 Git 内部会对 <code>*</code> 作处理，而没有 <code>\</code> 的话，shell 会先将 <code>*</code> 展开例如：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>git rm --cached <span class="se">\*\*</span>/<span class="se">\*</span>.log
+</pre></div>
+</td></tr></table>
+
+<h2 id="-git-mv-source-destination">重命名文件 -- <code>git mv &lt;source&gt; &lt;destination&gt;</code></h2>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span>git mv README.md README
+<span class="c1"># 等价于下面三个命令</span>
+mv README.md README
+git rm README.md
+git add README
+</pre></div>
+</td></tr></table>
+
+<h1 id="_5">状态变动</h1>
+<h2 id="-git-stage-pathspec">暂存文件 -- <code>git stage &lt;pathspec&gt;...</code></h2>
+<p>暂存（stage）修改的文件，与 <code>add</code> 是同义词。</p>
+<ul>
+<li><code>git stage  .</code>: 暂存已修改的文件和新文件，不暂存删除变动</li>
+<li><code>git stage -u</code>: 暂存已修改的文件和删除变动，不暂存新文件</li>
+<li><code>git stage -A</code>: 暂存所有文件</li>
+</ul>
+<h2 id="-git-reset">取消暂存 -- <code>git reset</code></h2>
+<ul>
+<li><code>git reset HEAD &lt;file&gt;...</code>: 取消暂存（unstage）</li>
+<li><code>git reset --hard &lt;file&gt;...</code>: 丢弃对应文件未提交的修改（<strong>所有修改都会消失，慎用</strong>）</li>
+<li><code>git reset --hard HEAD</code>: 丢弃所有未提交的修改（<strong>所有修改都会消失，慎用</strong>）</li>
+</ul>
+<h2 id="-git-commit">提交修改 -- <code>git commit</code></h2>
+<ul>
+<li><code>git commit -a</code>: 暂存所有已跟踪的文件，并提交修改</li>
+<li><code>git commit -m &lt;msg&gt;</code>: 提交修改，并将 <code>msg</code> 作为提交信息</li>
+<li><code>git commit -v</code>: 提交修改，并将 <code>diff</code> 结果附在提交信息中</li>
+<li><code>git commit --amend</code>: 重新提交修改</li>
+</ul>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># 暂存并提交</span>
+git commit -a -m <span class="s1">&#39;added new benchmarks&#39;</span>
+<span class="c1"># 暂存漏掉的文件，重新提交</span>
+git commit -m <span class="s1">&#39;initial commit&#39;</span>
+git add forgotten_file
+git commit --amend
+</pre></div>
+</td></tr></table>
+
+<h1 id="_6">远程仓库</h1>
+<h2 id="-git-clone-repository-directory">克隆远程仓库 -- <code>git clone &lt;repository&gt; [&lt;directory&gt;]</code></h2>
+<p>克隆远程仓库并重命名为 <code>&lt;directory&gt;</code>。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>git clone https://github.com/libgit2/libgit2
+git clone https://github.com/libgit2/libgit2 libgit2
+</pre></div>
+</td></tr></table>
+
+<h2 id="-git-remote">添加、删除、列出远程仓库 -- <code>git remote</code></h2>
+<ul>
+<li><code>git remote -v</code>: 显示远程仓库名和对应的 URL</li>
+<li><code>git remote show &lt;name&gt;</code>: 显示远程仓库的详细信息</li>
+<li><code>git remote add &lt;name&gt; &lt;url&gt;</code>: 添加 <code>&lt;name&gt;</code> 作为位于 <code>&lt;url&gt;</code> 的远程仓库</li>
+<li><code>git remote rename &lt;old&gt; &lt;new&gt;</code>: 重命名远程仓库和远程仓库本地名</li>
+<li><code>git remote rm &lt;name&gt;</code>: 删除远程仓库</li>
+</ul>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># git remote -v</span>
+origin  https://github.com/schacon/ticgit <span class="o">(</span>fetch<span class="o">)</span>
+origin  https://github.com/schacon/ticgit <span class="o">(</span>push<span class="o">)</span>
+<span class="c1"># git remote add &lt;name&gt; &lt;url&gt;</span>
+git remote add pb https://github.com/paulboone/ticgit
+</pre></div>
+</td></tr></table>
+
+<h2 id="-git-ls-remote-url">列出远程仓库的所有引用 -- <code>git ls-remote [&lt;url&gt;]</code></h2>
+<p>列出远程仓库的所有引用（remote references），包括分支、标签等。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># git ls-remote</span>
+From git@github.com:loggerhead/lhttpd.git
+bc5f82b661d5fec273e66a765d23a761b74c6a54    HEAD
+22f3f0ec3b612c368b3a8b9aa15012e91e48c4f6    refs/heads/dev
+bc5f82b661d5fec273e66a765d23a761b74c6a54    refs/heads/master
+0d84e16dc2e19a309865202a4d2d2e267c1f315e    refs/tags/v0.1
+22f3f0ec3b612c368b3a8b9aa15012e91e48c4f6    refs/tags/v0.2
+
+<span class="c1"># git ls-remote https://github.com/loggerhead/lhttpd.git</span>
+bc5f82b661d5fec273e66a765d23a761b74c6a54    HEAD
+22f3f0ec3b612c368b3a8b9aa15012e91e48c4f6    refs/heads/dev
+bc5f82b661d5fec273e66a765d23a761b74c6a54    refs/heads/master
+0d84e16dc2e19a309865202a4d2d2e267c1f315e    refs/tags/v0.1
+22f3f0ec3b612c368b3a8b9aa15012e91e48c4f6    refs/tags/v0.2
+</pre></div>
+</td></tr></table>
+
+<h2 id="-git-push">更新远程仓库 -- <code>git push</code></h2>
+<ul>
+<li><code>git push origin --tags</code>: 更新远程仓库的标签</li>
+<li><code>git push &lt;remote&gt; &lt;branch&gt;</code>: 更新 <code>&lt;branch&gt;</code> 分支到远程仓库</li>
+<li><code>git push &lt;remote&gt; --delete &lt;remote_branch&gt;</code>: 删除远程仓库上的 <code>&lt;remote_branch&gt;</code> 分支</li>
+</ul>
+<h2 id="-git-pull">下载并合并远程仓库的数据 -- <code>git pull</code></h2>
+<p>下载远程仓库的数据，并进行合并。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># 大部分情况等价于 `git fetch &amp;&amp; git merge`</span>
+git pull
+</pre></div>
+</td></tr></table>
+
+<h2 id="-git-fetch-remote">下载远程仓库的数据 -- <code>git fetch [&lt;remote&gt;]</code></h2>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>git fetch origin
+</pre></div>
+</td></tr></table>
+
+<h2 id="_7">用远程仓库覆盖本地分支</h2>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>git fetch --all
+git reset --hard origin/YOUR_BRANCH
+<span class="c1"># 覆盖所有分支</span>
+<span class="c1"># git reset --hard origin</span>
+</pre></div>
+</td></tr></table>
+
+<h2 id="-git-submodule">子模块操作 -- <code>git submodule</code></h2>
+<ul>
+<li><code>git submodule add &lt;repository&gt;</code>: 添加子模块</li>
+<li><code>git submodule init</code>: 初始化子模块</li>
+<li><code>git submodule update</code>: 更新子模块</li>
+</ul>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># 为项目添加子模块</span>
+git submodule add https://github.com/chaconinc/DbConnector
+
+<span class="c1"># 下载项目的子模块</span>
+git clone https://github.com/chaconinc/MainProject
+<span class="nb">cd</span> MainProject
+<span class="nb">cd</span> DbConnector
+<span class="c1"># 初始化本地配置</span>
+git submodule init
+<span class="c1"># 下载子模块数据并 checkout</span>
+git submodule update
+
+<span class="c1"># clone 并下载所有子模块</span>
+git clone --recursive https://github.com/chaconinc/MainProject
+</pre></div>
+</td></tr></table>
+
+<h1 id="_8">分支操作</h1>
+<h2 id="-git-branch">创建、删除、列出分支 -- <code>git branch</code></h2>
+<ul>
+<li><code>git branch &lt;branchname&gt;</code>: 创建分支</li>
+<li><code>git branch -d &lt;branchname&gt;</code>: 删除分支，分支必须已经被合并到其他分支</li>
+<li><code>git branch -D &lt;branchname&gt;</code>: 强制删除分支</li>
+<li><code>git branch</code>: 列出所有分支</li>
+<li><code>git branch -v</code>: 列出所有分支和最后一次提交</li>
+<li><code>git branch --merged</code>: 列出被合并到当前分支的其他分支</li>
+<li><code>git branch --no-merged</code>: 列出未合并到当前分支的其他分支</li>
+<li><code>git branch -u &lt;remote&gt;/&lt;branch&gt;</code>: 设置当前分支与远程分支 <code>&lt;remote&gt;/&lt;branch&gt;</code> 同步（track upstream branch）</li>
+<li><code>git branch -vv</code>: 列出本地分支与远程分支的关系</li>
+</ul>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># git branch -vv</span>
+  iss53     7e424c3 <span class="o">[</span>origin/iss53: ahead 2<span class="o">]</span> forgot something          <span class="c1"># 本地分支比远程分支多2次提交</span>
+  master    1ae2a45 <span class="o">[</span>origin/master<span class="o">]</span> deploying index fix
+* serverfix f8674d9 <span class="o">[</span>teamone/server-fix-good: ahead 3, behind 1<span class="o">]</span> fix  <span class="c1"># 当前分支。与远程分支有4次提交未同步</span>
+  testing   5ea463a trying something new                              <span class="c1"># 没有设置同步的远程分支</span>
+</pre></div>
+</td></tr></table>
+
+<h2 id="-git-checkout">切换分支 -- <code>git checkout</code></h2>
+<ul>
+<li><code>git checkout &lt;branch&gt;</code>: 切换到分支</li>
+<li><code>git checkout -b &lt;new_branch&gt; [&lt;start_point&gt;]</code>: 创建分支，然后切换到该分支</li>
+<li><code>git checkout -- &lt;file&gt;...</code>: 还原到最后提交的版本/丢弃修改。<strong>WARNING: 文件的任何修改都会丢失</strong></li>
+</ul>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># 将 HEAD 指针指向 testing 分支</span>
+git checkout testing
+<span class="c1"># 等价于 `git branch testing &amp;&amp; git checkout testing`</span>
+git checkout -b testing
+<span class="c1"># 基于远程仓库 origin 的 master 分支创建分支 testing，并切换到 testing</span>
+git checkout -b testing origin/master
+</pre></div>
+</td></tr></table>
+
+<h2 id="-git-tag">创建、删除、列出标签 -- <code>git tag</code></h2>
+<ul>
+<li><code>git tag</code>: 按字母序列出所有标签</li>
+<li><code>git tag -l &lt;pattern&gt;</code>: 列出匹配的标签</li>
+<li><code>git tag -a &lt;tagname&gt; -m &lt;msg&gt;</code>: 创建带注释的标签</li>
+<li><code>git tag &lt;tagname&gt; [&lt;commit&gt;]</code>: 对 <code>&lt;commit&gt;</code> 创建标签</li>
+<li><code>git tag -d &lt;tagname&gt;</code>: 删除标签</li>
+</ul>
+      </div>
+    </article>
+  </section>
+<div id="disqus_thread"></div>
+<script>
+var disqus_config = function () {
+    this.page.identifier = "快速回忆你用过的 Git";
+};
+
+(function() {
+    var d = document, s = d.createElement('script');
+    s.async = true;
+    s.src = "//loggerhead.disqus.com/embed.js";
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+})();
+</script>      </div>
+    </div>
+  </div>
+</div>
+
+ <footer class="page-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-8">
+        <p>
+          &copy;2016&nbsp; <a href="..">loggerhead</a>
+        </p>
+      </div>
+      <div class="col-xs-4">
+        <p class="pull-right">
+          <a href="#" class="back-to-top">
+            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+            回到顶部
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <div class="row hidden-when-phone">
+      <div class="col-xs-8">
+        <p>
+          <a href="http://www.miitbeian.gov.cn/" target="_blank">粤ICP备16007488号</a>
+          &middot; Powered by <a href="https://github.com/getpelican/pelican" target="_blank">Pelican</a>
+        </p>
+
+        <p>
+          本站文章均为原创，并遵循 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh_TW" target="_blank">CC BY-SA 4.0 协议</a>
+        </p>
+      </div><!--/.col-xs-8 -->
+
+      <div class="col-xs-4">
+        <p class="pull-right">
+          <a href="https://www.upyun.com/zh/league.html" target="_blank">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAAtCAMAAAAZUYxJAAAAtFBMVEUAAABPrtxPrtxPrtxPrtxPrtxlZ2ZlZ2ZPrtxlZ2ZRqdRlZ2ZPrtxPrtxPrtxPrtxPrtxlZ2ZPrtxlZ2ZPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxlZ2ZPrtxPrtxPrtxlZ2ZlZ2ZPrtxlZ2ZlZ2ZPrtxPrtxlZ2ZlZ2ZlZ2ZlZ2ZlZ2ZPrtxPrtxlZ2ZPrtxlZ2ZlZ2ZlZ2ZPrtxPrtxlZ2ZPrtxlZ2bPPWi/AAAAOnRSTlMAgNCQ8aAQcD8fA/FPMevhsDD5wLp1cCHZypmHOwyrooFTGhLh0sSwinlfXfju67yMRyfcooZ4RS0XProUtAAAAZlJREFUSMft02tT4jAUxvHTNtAaobjd3iyUq1zE1V1dr0++//fypMGZCrbw1jG/N2nD8KcTTsmyLOvH6sUC4Tio7fxWyufll1KKqKu0P7fLpy7veUCHlwAAfxMYELsAHKIOtCiMe2TICQxPNqeNq7OjaWNGlX+Ixo4TAxg2p6e+/8jL32PpVZomLnBJWhZdzomNQiBrTJ/x3Y1ej6Q9XQIi0tJwQZUAGC7KlrS8VermhHS/+khuR8U17cRg+bYxTUvePTUtL+5p0iejdIJ5vwCKxqc+3z315IR0wsftLMgwB51Uf+9aqc1B2uf1gYbAapc2x1p+mc4nfDGnOikQE015jje+v6lNyPPaTMgMQJGmXpUuIyBO0tQ9SFdDIumTAf4Tvd0p43CupYsP1eQaB2mBF9oTmKF8WF+dGybNF3fLaZfYYpgLAGbCZOIKg6ehEEK/Gq98R2OIraS6Xqh//zNz1ntmQEgtMgGEbg2HkZet6Z6ndQbAmNr0c+xbZdSa9rATZtRK3l87dcmIqD2duJXYmZNlWZb17b0DTmto7227YPgAAAAASUVORK5CYII=" />
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+    <script src="../theme/js/bag.2.0.2.min.js"></script>
+
+<script id="myscripts">
+bag = new window.Bag();
+
+bag.require([
+    "//cdn.bootcss.com/jquery/2.2.1/jquery.min.js",
+    "//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"
+]);
+
+function load_css(url, done) {
+    var link  = document.createElement('link');
+    link.rel  = 'stylesheet';
+    link.href = url;
+    link.onload = done;
+    document.head.appendChild(link);
+}
+
+function load_js(url, done) {
+    var script = document.createElement('script');
+    script.src = url;
+    script.onload = done;
+    document.body.appendChild(script);
+}
+
+function gestureStart() {
+    for (i = 0; i < metas.length; i++) {
+        if (metas[i].name == "viewport") {
+            metas[i].content = "width=device-width, minimum-scale=0.25, maximum-scale=1.6";
+        }
+    }
+}
+
+(function screen_suit() {
+    var metas = document.getElementsByTagName('meta');
+    var ua = navigator.userAgent;
+    if (ua.match(/iPhone/i)) {
+        for (var i = 0; i < metas.length; i++) {
+            if (metas[i].name == "viewport") {
+                metas[i].content = "width=device-width, minimum-scale=1.0, maximum-scale=1.0";
+            }
+        }
+        document.addEventListener("gesturestart", gestureStart, false);
+    }
+})();
+
+// See https://gist.github.com/vartan/ab195e5a502a47e0c3e5
+(function fix_hover_behavior() {
+    if('ontouchstart' in document.documentElement) {
+        for(var sheetI = document.styleSheets.length - 1; sheetI >= 0; sheetI--) {
+            var sheet = document.styleSheets[sheetI];
+            if(sheet.cssRules) {
+                for(var ruleI = sheet.cssRules.length - 1; ruleI >= 0; ruleI--) {
+                    var rule = sheet.cssRules[ruleI];
+                    if(rule.selectorText) {
+                        rule.selectorText = rule.selectorText.replace(":hover", ":active");
+                    }
+                }
+            }
+        }
+    }
+})();
+
+(function add_class_to_chinese_em(class_name) {
+    var ems = document.getElementsByTagName("em");
+
+    for (var i = 0; i < ems.length; i++) {
+        var text = ems[i].textContent;
+        // if has chinese char
+        if(/.*[\u4e00-\u9fa5]+.*$/.test(text)) {
+            ems[i].className += " " + class_name;
+        }
+    }
+})('chinese');
+
+// IE10 viewport hack for Surface/desktop Windows 8 bug
+(function fix_ie10_viewport_bug() {
+    if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+        bag.require([
+            "//maxcdn.bootstrapcdn.com/css/ie10-viewport-bug-workaround.css",
+            "//maxcdn.bootstrapcdn.com/js/ie10-viewport-bug-workaround.js"
+        ]);
+    }
+})();
+
+(function load_katex_when_need(class_name) {
+    var maths = document.getElementsByClassName(class_name);
+    if (maths.length == 0) {
+        return;
+    }
+
+    bag.require([
+        "//cdn.bootcss.com/KaTeX/0.6.0/katex.min.js"
+    ]).then(function() {
+        for (var i = 0; i < maths.length; i++) {
+            var math = maths[i];
+
+            var displayMode = null;
+            if (math.tagName == "SPAN") {
+                displayMode = false;
+            } else if (math.tagName == "DIV") {
+                displayMode = true;
+            }
+
+            if (displayMode === null) {
+                console.log("Cannot render " + math);
+            } else {
+                try {
+                    katex.render(math.textContent, maths[i], { displayMode: displayMode });
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        }
+    });
+
+    load_css("//cdn.bootcss.com/KaTeX/0.6.0/katex.min.css");
+})("math");
+</script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+  <script>
+  bag.require([
+    "//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js",
+    "//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"
+  ]);
+  </script>
+<![endif]-->
+ 
+</body>
+</html>

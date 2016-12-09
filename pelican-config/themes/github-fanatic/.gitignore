@@ -1,0 +1,33 @@
+### Sass ###
+*.log
+static/js/ga.js
+static/js/ga.*.js
+static/css/style.css
+.sass-cache
+*.css.map
+
+### OSX ###
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+### vim ###
+.*.s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+
+*.py[cod]
+
+# C extensions
+*.so

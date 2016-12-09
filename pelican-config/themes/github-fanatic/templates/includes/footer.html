@@ -1,0 +1,45 @@
+<footer class="page-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-8">
+        {% if articles %}
+           {% set CURRENT_YEAR = articles[0].date.strftime('%Y') %}
+        {% else %}
+           {% set CURRENT_YEAR = '' %}
+        {% endif %}
+        <p>
+          &copy;{{ CURRENT_YEAR }}&nbsp; <a href="{{ SITEURL }}">{{ AUTHOR }}</a>
+        </p>
+      </div>
+      <div class="col-xs-4">
+        <p class="pull-right">
+          <a href="#" class="back-to-top">
+            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+            回到顶部
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <div class="row hidden-when-phone">
+      <div class="col-xs-8">
+        <p>
+          <a href="http://www.miitbeian.gov.cn/" target="_blank">粤ICP备16007488号</a>
+          &middot; Powered by <a href="https://github.com/getpelican/pelican" target="_blank">Pelican</a>
+        </p>
+
+        <p>
+          本站文章均为原创，并遵循 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh_TW" target="_blank">CC BY-SA 4.0 协议</a>
+        </p>
+      </div><!--/.col-xs-8 -->
+
+      <div class="col-xs-4">
+        <p class="pull-right">
+          <a href="https://www.upyun.com/zh/league.html" target="_blank">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAAtCAMAAAAZUYxJAAAAtFBMVEUAAABPrtxPrtxPrtxPrtxPrtxlZ2ZlZ2ZPrtxlZ2ZRqdRlZ2ZPrtxPrtxPrtxPrtxPrtxlZ2ZPrtxlZ2ZPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxlZ2ZPrtxPrtxPrtxlZ2ZlZ2ZPrtxlZ2ZlZ2ZPrtxPrtxlZ2ZlZ2ZlZ2ZlZ2ZlZ2ZPrtxPrtxlZ2ZPrtxlZ2ZlZ2ZlZ2ZPrtxPrtxlZ2ZPrtxlZ2bPPWi/AAAAOnRSTlMAgNCQ8aAQcD8fA/FPMevhsDD5wLp1cCHZypmHOwyrooFTGhLh0sSwinlfXfju67yMRyfcooZ4RS0XProUtAAAAZlJREFUSMft02tT4jAUxvHTNtAaobjd3iyUq1zE1V1dr0++//fypMGZCrbw1jG/N2nD8KcTTsmyLOvH6sUC4Tio7fxWyufll1KKqKu0P7fLpy7veUCHlwAAfxMYELsAHKIOtCiMe2TICQxPNqeNq7OjaWNGlX+Ixo4TAxg2p6e+/8jL32PpVZomLnBJWhZdzomNQiBrTJ/x3Y1ej6Q9XQIi0tJwQZUAGC7KlrS8VermhHS/+khuR8U17cRg+bYxTUvePTUtL+5p0iejdIJ5vwCKxqc+3z315IR0wsftLMgwB51Uf+9aqc1B2uf1gYbAapc2x1p+mc4nfDGnOikQE015jje+v6lNyPPaTMgMQJGmXpUuIyBO0tQ9SFdDIumTAf4Tvd0p43CupYsP1eQaB2mBF9oTmKF8WF+dGybNF3fLaZfYYpgLAGbCZOIKg6ehEEK/Gq98R2OIraS6Xqh//zNz1ntmQEgtMgGEbg2HkZet6Z6ndQbAmNr0c+xbZdSa9rATZtRK3l87dcmIqD2duJXYmZNlWZb17b0DTmto7227YPgAAAAASUVORK5CYII=" />
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>

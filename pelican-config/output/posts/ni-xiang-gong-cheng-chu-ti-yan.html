@@ -1,0 +1,1604 @@
+<!Doctype html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+<meta name="renderer" content="webkit">
+<meta name="HandheldFriendly" content="True">
+<meta name="google-site-verification" content="xRiYQAQ0h0n3RXqrq0GgrdFm3BMFqDvDwwiRylv0YhQ">
+
+<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/android-chrome-192x192.png" sizes="192x192">
+<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+<meta name="theme-color" content="#ffffff">
+<meta name="author" content="loggerhead" />    <meta name="keywords" content="汇编,Linux" />
+
+  <meta name="description" content="为了读懂 JOS 的代码，最近学了一波汇编。主要是通过粗略的过一遍 OpenSecurityTraining.info 上的 Introductory Intel x86 课程 来了解大概，因为已经学过一次，所以只要捡起来直接看代码就行了，遇到模糊不清的地方就详细看看 PC Assembly Tutorial。 Introductory Intel x86 课程上有个很有趣的逆向工程作业——拆除「炸弹」。「炸弹」是一个二进制可执行文件，由 6 个阶段和 1 个隐藏阶段组成，每个阶段都会读取用户输入，..." />
+
+  <title>  逆向工程初体验
+</title>
+
+<link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="../theme/css/style.1cd8932.css">
+ 
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+  <link href="../atom.xml" rel="alternate" type="application/atom+xml">
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="..">loggerhead's blog</a>
+    </div>
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../archives.html">归档</a></li>
+        <li><a href="../404.html">关于</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/loggerhead" target="_blank">GitHub</a></li>
+        <li><a href="https://www.hackerrank.com/loggerhead" target="_blank">HackerRank</a></li>
+        <li><a href="https://douban.com/people/loggerhead" target="_blank">豆瓣</a></li>
+      </ul>
+    </div><!--/.navbar-header -->
+  </div><!--/.container -->
+</nav><!--/.navbar -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="markdown-body article-list">
+  <section id="content">
+    <article>
+      <header class="page-header">
+        <h1>
+          <a class="article-title" href="../posts/ni-xiang-gong-cheng-chu-ti-yan.html" rel="bookmark" title="Permalink to 逆向工程初体验">
+            逆向工程初体验
+          </a>
+        </h1>
+<footer class="post-info">
+  <div class="row">
+    <div class="col-xs-8">
+      <!-- <span class="label label-default">Tags</span> -->
+        <a class="tag btn btn-xs" href="../tag/hui-bian.html">
+          汇编
+        </a>
+        <a class="tag btn btn-xs" href="../tag/linux.html">
+          Linux
+        </a>
+    </div>
+
+    <div class="col-xs-4 time">
+      <time class="pull-right" datetime="2016-05-19T15:37:01+08:00">
+        2016-05-19
+      </time>
+    </div>
+  </div>
+</footer>        <hr>
+      </header>
+      <div class="entry-content">
+        <p>为了读懂 <a href="https://pdos.csail.mit.edu/6.828/2014/jos.git/">JOS</a> 的代码，最近学了一波汇编。主要是通过粗略的过一遍 <a href="http://opensecuritytraining.info/">OpenSecurityTraining.info</a> 上的 <a href="http://opensecuritytraining.info/IntroX86.html">Introductory Intel x86 课程</a> 来了解大概，因为已经学过一次，所以只要捡起来直接看代码就行了，遇到模糊不清的地方就详细看看 <a href="http://www.drpaulcarter.com/pcasm/">PC Assembly Tutorial</a>。</p>
+<p>Introductory Intel x86 课程上有个很有趣的逆向工程作业——拆除「炸弹」。「炸弹」是一个二进制可执行文件，由 6 个阶段和 1 个隐藏阶段组成，每个阶段都会读取用户输入，只有特定的输入才能通过这个阶段，在通过所有阶段后，炸弹就被成功拆除了。之所以说它有趣，是因为：</p>
+<ul>
+<li>只有二进制文件，所以只能通过反汇编后读 x86 汇编来拆除炸弹，难度不小</li>
+<li>每一阶段难度递增，隐藏阶段只有达到特定条件才能进入，像极了闯关游戏</li>
+<li>通过汇编考察了很常见的程序结构和数据结构，十分考验 C 语言功底</li>
+</ul>
+<p>本文将一步一步介绍怎么拆除炸弹。关于炸弹的详细说明请戳：<a href="http://www.cs.cmu.edu/afs/cs/academic/class/15213-s02/www/applications/labs/lab2/bomblab.html">CMU binary bomb challenge</a>，下载「炸弹」请戳：<a href="http://http//csapp.cs.cmu.edu/2e/bomb32.tar">bomb32.tar</a>，查看答案或者帮助请戳：<a href="https://github.com/loggerhead/CMU-binary-bomb-challenge">loggerhead/CMU-binary-bomb-challenge</a>。</p>
+
+
+<div class="toc">
+<ul>
+<li><a href="#_1">准备工作</a></li>
+<li><a href="#_2">第一阶段</a></li>
+<li><a href="#_3">第二阶段</a></li>
+<li><a href="#_4">第三阶段</a></li>
+<li><a href="#_5">第四阶段</a></li>
+<li><a href="#_6">第五阶段</a></li>
+<li><a href="#_7">第六阶段</a></li>
+<li><a href="#_8">隐藏阶段</a></li>
+</ul>
+</div>
+<h1 id="_1">准备工作</h1>
+<p>既然是拆除炸弹这种专业的任务，自然需要专业的工具才能解决。不过炸弹只能运行在 Linux 系统上，而大部分的 Linux 发行版本都自带了这些工具，所以也不用自己再去特意安装啦。下面介绍一下这些工具：</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/GNU_Debugger">gdb</a>: GNU 出品的一款著名的命令行调试工具，可以用来调试包括 C/C++ 在内的一系列语言。功能十分强大，可以自定义函数，查看寄存器的值等等。</li>
+<li><a href="http://www.thegeekstuff.com/2012/09/objdump-examples/">objdump</a>: 用于显示可执行文件的各种信息，包括：符号表、反汇编结果等等。</li>
+<li><a href="http://www.thegeekstuff.com/2010/11/strings-command-examples/">strings</a>: 显示文件中包含的所有字符串。</li>
+</ul>
+<p>在着手拆除炸弹之前，我们先看一看炸弹的大致构造。为此，我们执行以下命令生成 AT&amp;T 语法的汇编：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># 解压</span>
+tar xvf bomb32.tar
+<span class="c1"># 反汇编</span>
+objdump -d bomb &gt; bomb.asm
+</pre></div>
+</td></tr></table>
+
+<p>也可以通过以下命令生成 intel 语法的汇编：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>objdump -M intel -d bomb &gt; bomb.asm
+</pre></div>
+</td></tr></table>
+
+<p>一般没有特别说明是 AT&amp;T 语法的话，接触到的汇编都是 intel 语法的。两者只有些许不同，详情见：<a href="http://www.imada.sdu.dk/Courses/DM18/Litteratur/IntelnATT.htm">Intel and AT&amp;T Syntax</a>。</p>
+<p>现在拿起我们的炸弹瞧一瞧。容易发现有一些库函数，比如：<code>fprintf</code>、<code>fgets</code>、<code>printf</code>；一些名字怪异，很有可能是编译器自动生成的函数；再往下翻翻就找到了 <code>main</code> 函数，随便一扫，开头这堆汇编看不太出来是做什么的，但是很快我们看到一个熟悉的身影：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 80489e1:   e8 9a fe ff ff          call   8048880 &lt;fopen@plt&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p><code>fopen</code> 应该是从文件读取输入，再看到：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 80489bd:   83 f8 01                cmp    $0x1,%eax</span>
+</pre></div>
+</td></tr></table>
+
+<p>应该是判断命令行参数个数是不是等于 1。如果你有好好看一下炸弹的 <a href="http://www.cs.cmu.edu/afs/cs/academic/class/15213-s02/www/applications/labs/lab2/bomblab.html">详细说明</a>，那么应该注意到下面这段话：</p>
+<blockquote>
+<p>The bomb ignores blank input lines. If you run the bomb with a command line argument such as <em>psol.txt</em>, it will read the input lines from <em>psol.txt</em> until it reaches EOF, and then switch over to<em>stdin</em>. In a moment of weakness, Dr. Evil added this feature so you don't have to keep retyping the solutions to phases you have already defused.</p>
+</blockquote>
+<p>所以我们猜测这段代码是用来从文件读取输入的。继续往下翻，发现有好几个结构类似的片段：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048a52:   e8 a5 07 00 00          call   80491fc &lt;read_line&gt;</span>
+<span class="x"> 8048a57:   83 c4 f4                add    $0xfffffff4,%esp</span>
+<span class="x"> 8048a5a:   50                      push   %eax</span>
+<span class="x"> 8048a5b:   e8 c0 00 00 00          call   8048b20 &lt;phase_1&gt;</span>
+<span class="x"> 8048a60:   e8 c7 0a 00 00          call   804952c &lt;phase_defused&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>用 C 表示就是：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">char</span> <span class="o">*</span><span class="n">line</span> <span class="o">=</span> <span class="n">read_line</span><span class="p">();</span>
+<span class="n">phase_1</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+<span class="n">phase_defused</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+
+<p>这三行代码到底做了些什么，我们暂时不清楚，不过对 <code>main</code> 一番扫视让我们了解到炸弹大概类似于：</p>
+<p><img alt="bomb_main.jpg" src="https://dn-loggerhead.qbox.me/images/bomb_main.jpg" /></p>
+<p>只有 6 次正确的输入才能解除炸弹，否则就会……</p>
+<p><img alt="bomb_exploded.jpg" src="https://dn-loggerhead.qbox.me/images/bomb_exploded.jpg" /></p>
+<h1 id="_2">第一阶段</h1>
+<p>我们看到 <code>phase_1</code> 函数，结构比较简单，关键在于下面这几行在做什么：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048b32:   e8 f9 04 00 00          call   8049030 &lt;strings_not_equal&gt;</span>
+<span class="x"> 8048b37:   83 c4 10                add    $0x10,%esp</span>
+<span class="x"> 8048b3a:   85 c0                   test   %eax,%eax</span>
+<span class="x"> 8048b3c:   74 05                   je     8048b43 &lt;phase_1+0x23&gt;</span>
+<span class="x"> 8048b3e:   e8 b9 09 00 00          call   80494fc &lt;explode_bomb&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>从函数名字来看，似乎是比较两个字符串是否相等，然后根据结果决定要不要引爆炸弹。随便尝试几次，发现结果都是爆炸，所以这部分的逻辑很可能是：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">strings_not_equal</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">CONST_STRING</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">explode_bomb</span><span class="p">();</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="c1">// do something</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>按照惯例，函数的输出会保存在 <code>eax</code> 寄存器中。那么 <code>8048b3a</code> 和 <code>8048b3c</code> 两行的作用就很明显了，根据 <code>test %eax, %eax</code> 的结果决定跳转到 <code>8048b43</code>，还是运行 <code>8048b3e</code> 的指令。通过 Google <code>80386 test</code> 很容易就能找到 <code>test</code> 指令的作用，<code>test</code> 和 <code>je</code> 两行结合起来正好就是上述的 <code>if</code>。所以解除第一阶段的问题就简化成了：让 <code>line</code> 和 <code>CONST_STRING</code> 相等。为了搞明白这两个参数来自哪里，我们往上看，注意到两个疑似传参的 <code>push</code> 指令：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048b2c:   68 c0 97 04 08          push   $0x80497c0</span>
+<span class="x"> 8048b31:   50                      push   %eax</span>
+</pre></div>
+</td></tr></table>
+
+<p><code>0x80497c0</code> 看着像是字符串常量 <code>CONST_STRING</code> 的地址，<code>eax</code> 寄存器估计是存放了输入字符串的地址。另外，根据传参的原则——最先 <code>push</code> 的是最右边的参数，而且两个参数正好对应两次 <code>push</code>，这也进一步肯定了我们的想法。</p>
+<p>接下来我们通过 gdb 来验证一下。依次输入以下 gdb 命令，运行到 <code>8048b32</code> 这一行：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>b *0x8048b32
+r
+</pre></div>
+</td></tr></table>
+
+<p>我们尝试打印一下 <code>0x80497c0</code> 和 <code>eax</code> 指向的字符串：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x">x/s 0x80497c0</span>
+<span class="x">x/s </span><span class="p">$</span><span class="nv">eax</span><span class="x"></span>
+</pre></div>
+</td></tr></table>
+
+<p>发现输出和我们预料的一样，<code>0x80497c0</code> 果然存放了字符串的地址，其指向的字符串是：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Public speaking is very easy.
+</pre></div>
+</td></tr></table>
+
+<p><code>eax</code> 也和我们的输入一模一样。我们再试试把输入换成上述字符串，看能不能解除第一阶段。成功！</p>
+<blockquote>
+<p>Phase 1 defused. How about the next one?</p>
+</blockquote>
+<h1 id="_3">第二阶段</h1>
+<p>不管你解除第一阶段时心情是怎样的，反正我是异常兴奋的。第一阶段主要考察函数的调用过程，第二阶段就不只是这么简单咯。简洁起见，接下来不会再对基本的汇编知识进行详细解释了，如果还不太熟悉，可以按之前说的去掌握汇编的基础知识。</p>
+<p>粗略的看一眼代码，发现 <code>phase_2</code> 有三个条件跳转，和一个新函数 <code>read_six_numbers</code>。一下子看不出来什么，再用命令 <code>strings bomb</code> 看看有些什么字符串，虽然不能直接找到答案，但是我们可以看到一串熟悉的字符串——<code>%d %d %d %d %d %d</code>，再根据 <code>read_six_numbers</code> 的函数名，可以猜测 <code>read_six_numbers</code> 把读入的一行输入转换成了 6 个数字。我们把断点设在 <code>8048b5b</code>，发现疑似参数的寄存器 <code>edx</code> 的值就是我们的输入，而 <code>eax</code> 的值似乎没有规律，再通过 <code>p/x $eax</code> 查看一下 <code>eax</code> 中存放的十六进制值，也没有什么规律。</p>
+<p>先不管这么多，通过命令 <code>ni</code> 接着往下调试，遇到第一个条件跳转：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048b63:   83 7d e8 01             cmpl   $0x1,-0x18(%ebp)</span>
+<span class="x"> 8048b67:   74 05                   je     8048b6e &lt;phase_2+0x26&gt;</span>
+<span class="x"> 8048b69:   e8 8e 09 00 00          call   80494fc &lt;explode_bomb&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>这里的逻辑可以表示为：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">ebp</span><span class="o">-</span><span class="mh">0x18</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0x1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// do something</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">explode_bomb</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>我们通过 <code>x/x $ebp-0x18</code> 看看地址 <code>$ebp-0x18</code> 处存放的值，发现正好和我们输入的第一个数字是一样的，这一点可以通过多次输入不同的值来验证。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048b6e:   bb 01 00 00 00          mov    $0x1,%ebx</span>
+<span class="x"> 8048b73:   8d 75 e8                lea    -0x18(%ebp),%esi</span>
+<span class="x"> 8048b76:   8d 43 01                lea    0x1(%ebx),%eax</span>
+<span class="x"> 8048b79:   0f af 44 9e fc          imul   -0x4(%esi,%ebx,4),%eax</span>
+</pre></div>
+</td></tr></table>
+
+<p>翻译成 C 就是：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">ebx</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="c1">// 第一个数字的地址</span>
+<span class="n">esi</span> <span class="o">=</span> <span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x18</span><span class="p">;</span>
+<span class="c1">// 2</span>
+<span class="n">eax</span> <span class="o">=</span> <span class="n">ebx</span> <span class="o">+</span> <span class="mh">0x1</span><span class="p">;</span>
+<span class="n">eax</span> <span class="o">*=</span> <span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="mh">0x4</span> <span class="o">+</span> <span class="n">esi</span> <span class="o">+</span> <span class="n">ebx</span><span class="o">*</span><span class="mi">4</span><span class="p">);</span>
+</pre></div>
+</td></tr></table>
+
+<p>之前提到 <code>read_six_numbers</code> 把输入的字符串转换成了 6 个数字，但是这 6 个数字是以什么样的方式存储呢？返回值又是什么？如果熟悉 C 语言，很快就能想到一种实现：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="o">*</span><span class="nf">read_six_numbers</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">line</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">nums</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
+    <span class="n">sscanf</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s">&quot;%d %d %d %d %d %d&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">nums</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                                    <span class="p">,</span> <span class="o">&amp;</span><span class="n">nums</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                                    <span class="p">,</span> <span class="o">&amp;</span><span class="n">nums</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                                    <span class="p">,</span> <span class="o">&amp;</span><span class="n">nums</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                                    <span class="p">,</span> <span class="o">&amp;</span><span class="n">nums</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+                                    <span class="p">,</span> <span class="o">&amp;</span><span class="n">nums</span><span class="p">[</span><span class="mi">5</span><span class="p">]);</span>
+    <span class="k">return</span> <span class="n">nums</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>再对照着上面的翻译和 <code>ebp - 0x18</code>所指向的数字，不难发现 <code>8048b6e</code> 到 <code>8048b79</code> 这 4 行代码实际上是：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// ebx</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">esi</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">nums</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="n">eax</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mh">0x1</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="c1">// int 占 4 个字节</span>
+<span class="c1">// eax *= *(esi + (ebx-1)*4)</span>
+<span class="n">eax</span> <span class="o">*=</span> <span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+</pre></div>
+</td></tr></table>
+
+<p>看到这两行跳转：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048b7e:   39 04 9e                cmp    %eax,(%esi,%ebx,4)</span>
+<span class="x"> 8048b81:   74 05                   je     8048b88 &lt;phase_2+0x40&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>是不是就是：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">eax</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>再看到接下来三行：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048b88:   43                      inc    %ebx</span>
+<span class="x"> 8048b89:   83 fb 05                cmp    $0x5,%ebx</span>
+<span class="x"> 8048b8c:   7e e8                   jle    8048b76 &lt;phase_2+0x2e&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>继续我们的翻译：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">i</span><span class="o">++</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">goto</span> <span class="mh">0x8048b76</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>把这几行结合到一起看：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048b76:   8d 43 01                lea    0x1(%ebx),%eax</span>
+<span class="x"> 8048b79:   0f af 44 9e fc          imul   -0x4(%esi,%ebx,4),%eax</span>
+<span class="x"> 8048b7e:   39 04 9e                cmp    %eax,(%esi,%ebx,4)</span>
+<span class="x"> 8048b81:   74 05                   je     8048b88 &lt;phase_2+0x40&gt;</span>
+<span class="x"> 8048b83:   e8 74 09 00 00          call   80494fc &lt;explode_bomb&gt;</span>
+<span class="x"> 8048b88:   43                      inc    %ebx</span>
+<span class="x"> 8048b89:   83 fb 05                cmp    $0x5,%ebx</span>
+<span class="x"> 8048b8c:   7e e8                   jle    8048b76 &lt;phase_2+0x2e&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>也就是：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">eax</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">eax</span> <span class="o">*=</span> <span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">eax</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// go on</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">explode_bomb</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="n">i</span><span class="o">++</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">goto</span> <span class="n">first_line</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>亦即：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">do</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="p">{</span>
+        <span class="n">explode_bomb</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="n">i</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">);</span>
+</pre></div>
+</td></tr></table>
+
+<p>这下逻辑就很清晰了，翻译成人话就是：第 i 个数等于前一个数乘以 <code>i+1</code>。所以答案就是：</p>
+<blockquote>
+<p>1 2 6 24 120 720</p>
+</blockquote>
+<p>OK，第二阶段主要考察了循环。</p>
+<h1 id="_4">第三阶段</h1>
+<p>瞟一眼，发现有很多重复结构：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048be0:   b3 71                   mov    $0x71,%bl</span>
+<span class="x"> 8048be2:   81 7d fc 09 03 00 00    cmpl   $0x309,-0x4(%ebp)</span>
+<span class="x"> 8048be9:   0f 84 a0 00 00 00       je     8048c8f &lt;phase_3+0xf7&gt;</span>
+<span class="x"> 8048bef:   e8 08 09 00 00          call   80494fc &lt;explode_bomb&gt;</span>
+<span class="x">   8048bf4: e9 96 00 00 00          jmp    8048c8f &lt;phase_3+0xf7&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>看到一个 <code>sscanf</code>，按着老套路来，容易发现要求输入符合 <code>%d %c %d</code> 这样的格式，<code>8048bbf</code> 开始的三行代码是检查 <code>sscanf</code> 成功解析的次数是否大于 2。上述重复结构很容易让我们想到，会不会是挨个挨个检查输入，然后所有输入都匹配才成功通过？这一点很容易否决，因为：</p>
+<ol>
+<li>这些相似结构不止出现了 3 次，而我们的输入只有 2 个整数，1 个字符；</li>
+<li>其中出现的条件跳转并不是往下跳，而是跳转到同一个位置——<code>8048c8f</code></li>
+</ol>
+<p>第二点让我们联想到 C 语言中的 switch-case 结构，至于是不是，我们先看看 <code>8048c8f</code> 后面的几行代码：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048c8f:   3a 5d fb                cmp    -0x5(%ebp),%bl</span>
+<span class="x"> 8048c92:   74 05                   je     8048c99 &lt;phase_3+0x101&gt;</span>
+<span class="x"> 8048c94:   e8 63 08 00 00          call   80494fc &lt;explode_bomb&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>翻译成 C：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">bl</span> <span class="o">==</span> <span class="o">*</span><span class="p">(</span><span class="n">ebp</span><span class="o">-</span><span class="mh">0x5</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">explode_bomb</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>告诉我们成功条件是 <code>bl == *(ebp-0x5)</code>。回到一开始：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048bc9:   83 7d f4 07             cmpl   $0x7,-0xc(%ebp)</span>
+<span class="x"> 8048bcd:   0f 87 b5 00 00 00       ja     8048c88 &lt;phase_3+0xf0&gt;</span>
+<span class="x"> 8048bd3:   8b 45 f4                mov    -0xc(%ebp),%eax</span>
+<span class="x"> 8048bd6:   ff 24 85 e8 97 04 08    jmp    *0x80497e8(,%eax,4)</span>
+</pre></div>
+</td></tr></table>
+
+<p>等价于：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">ebp</span><span class="o">-</span><span class="mh">0xC</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">7</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">goto</span> <span class="mh">0x8048c88</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">eax</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ebp</span><span class="o">-</span><span class="mh">0xC</span><span class="p">);</span>
+    <span class="n">addr</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="mh">0x80497e8</span> <span class="o">+</span> <span class="n">eax</span><span class="o">*</span><span class="mi">4</span><span class="p">);</span>
+    <span class="k">goto</span> <span class="n">addr</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>因为这几行代码是必经之地，所以我们将断点设在这里，输入 <code>11 a 13</code> 调试看看。一步一步调试过去，发现 <code>*(ebp-0xC)</code> 是输入的第一个数（输入不同值可以验证），跳转到 <code>8048c88</code> 以后，这两行代码告诉我们：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048c88:   b3 78                   mov    $0x78,%bl</span>
+<span class="x"> 8048c8a:   e8 6d 08 00 00          call   80494fc &lt;explode_bomb&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>只要第一个数大于 7，直接爆炸。所以上述逻辑可以简化为：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">num1</span> <span class="o">&lt;=</span> <span class="mi">7</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">addr</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="mh">0x80497e8</span> <span class="o">+</span> <span class="n">num1</span><span class="o">*</span><span class="mi">4</span><span class="p">);</span>
+    <span class="k">goto</span> <span class="n">addr</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">explode_bomb</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>注意到 0 到 7 有八个数，好像重复结构也差不多是七八个，数一数发现正好有 8 个重复结构。很自然想到是不是 <code>goto addr</code> 就相当于 <code>switch</code> 的作用，而重复结构就是 <code>case</code>，其中出现的无条件跳转 <code>jmp 8048c8f</code> 就是 <code>break</code>。我们换一个输入 <code>7 a 13</code> 看看到底是怎样的，单步运行会发现跳转到了：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048c76:   b3 62                   mov    $0x62,%bl</span>
+<span class="x"> 8048c78:   81 7d fc 0c 02 00 00    cmpl   $0x20c,-0x4(%ebp)</span>
+<span class="x"> 8048c7f:   74 0e                   je     8048c8f &lt;phase_3+0xf7&gt;</span>
+<span class="x"> 8048c81:   e8 76 08 00 00          call   80494fc &lt;explode_bomb&gt;</span>
+<span class="x"> 8048c86:   eb 07                   jmp    8048c8f &lt;phase_3+0xf7&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>这几行代码很简单，就不翻译了吧……关键在于 <code>cmpl $0x20c,-0x4(%ebp)</code> 这一句，如果两个操作数不相等就会爆炸，否则就 <code>break</code> 了。在 gdb 输入 <code>x/x $ebp-4</code> 命令发现 <code>ebp-0x4</code> 是对应于输入的第三个整数，<code>0x20c</code> 的十进制表示是 <code>524</code>，所以这次我们把输入换成 <code>7 a 524</code> 再试试。继续一步一步看过去，发现最后跳转到了 <code>8048c8f</code>，也就是最终成功条件的判断——<code>bl == *(ebp-0x5)</code>。因为 <code>bl</code> 占 1 个字节，正好对应于输入的字符，接着通过 <code>x/c $ebp-5</code> 可以确认这一点。而最近对 <code>bl</code> 的一次赋值是上面的第一行代码，<code>0x62</code> 对应于 <code>b</code>，所以正确的输入是 <code>7 b 524</code>。</p>
+<p>整体的逻辑等价于：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">char</span> <span class="n">b</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="n">c</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">sscanf</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s">&quot;%d %c %d&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="o">&lt;=</span> <span class="mi">7</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">switch</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="mi">0</span><span class="o">:</span> 
+                    <span class="p">...;</span>
+                    <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="p">...</span><span class="o">:</span> 
+                    <span class="p">...;</span>
+                    <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="mi">7</span><span class="o">:</span> 
+                    <span class="n">bl</span> <span class="o">=</span> <span class="mh">0x62</span><span class="p">;</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="o">!=</span> <span class="mh">0x20c</span><span class="p">)</span> 
+                        <span class="n">explode_bomb</span><span class="p">();</span>
+                    <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">bl</span> <span class="o">==</span> <span class="n">b</span><span class="p">)</span>
+            <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">explode_bomb</span><span class="p">();</span>
+</pre></div>
+</td></tr></table>
+
+<h1 id="_5">第四阶段</h1>
+<blockquote>
+<p>Halfway there!</p>
+</blockquote>
+<p>终于闯过了一半，真是不容易……来到第四阶段，发现代码挺短，瞬间信心大增。又看到了 <code>sscanf</code>，它附近的代码又在干同样的事情，这次是读取一个整数。随便输入一个整数 <code>42</code>，然后将断点设在 <code>8048d03</code>，看看 <code>-0x4(%ebp)</code> 是什么内容。容易验证 <code>$ebp-4</code> 是我们输入的那个整数，如此一来，<code>phase_4</code> 的逻辑就明了了：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">num</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">sscanf</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s">&quot;%d&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">num</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">explode_bomb</span><span class="p">();</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">num</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">eax</span> <span class="o">=</span> <span class="n">func4</span><span class="p">(</span><span class="n">num</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">eax</span> <span class="o">==</span> <span class="mh">0x37</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">explode_bomb</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">explode_bomb</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>拆除第四阶段的关键就转换为了：如何使 <code>func4(num) == 0x37</code>。我们继续运行，进入 <code>func4</code>，直到遇到 <code>8048cab</code> 的跳转，查看 <code>ebx</code> 的值，发现是我们的输入，也就是说 <code>$ebp+0x8</code> 是输入的数字。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048cab:   83 fb 01                cmp    $0x1,%ebx</span>
+<span class="x"> 8048cae:   7e 20                   jle    8048cd0 &lt;func4+0x30&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>不难发现这两行的逻辑是：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">num</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="c1">// do something</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>所以关键是 <code>else</code> 后面做了些什么，让返回值是 <code>0x37</code>，也就是 <code>55</code> 的。<code>else</code> 后面的语句是：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048cb3:   8d 43 ff                lea    -0x1(%ebx),%eax</span>
+<span class="x"> 8048cb6:   50                      push   %eax</span>
+<span class="x"> 8048cb7:   e8 e4 ff ff ff          call   8048ca0 &lt;func4&gt;</span>
+<span class="x"> 8048cbc:   89 c6                   mov    %eax,%esi</span>
+<span class="x"> 8048cbe:   83 c4 f4                add    $0xfffffff4,%esp</span>
+<span class="x"> 8048cc1:   8d 43 fe                lea    -0x2(%ebx),%eax</span>
+<span class="x"> 8048cc4:   50                      push   %eax</span>
+<span class="x"> 8048cc5:   e8 d6 ff ff ff          call   8048ca0 &lt;func4&gt;</span>
+<span class="x"> 8048cca:   01 f0                   add    %esi,%eax</span>
+<span class="x"> 8048ccc:   eb 07                   jmp    8048cd5 &lt;func4+0x35&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>除去传参的 <code>push</code> 和调整堆栈值以外，剩下部分的逻辑是：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">eax</span> <span class="o">=</span> <span class="n">ebx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">esi</span> <span class="o">=</span> <span class="n">func4</span><span class="p">(</span><span class="n">eax</span><span class="p">)</span>
+<span class="n">eax</span> <span class="o">=</span> <span class="n">ebx</span> <span class="o">-</span> <span class="mi">2</span><span class="p">;</span>
+<span class="n">eax</span> <span class="o">=</span> <span class="n">func4</span><span class="p">(</span><span class="n">eax</span><span class="p">)</span>
+<span class="n">eax</span> <span class="o">+=</span> <span class="n">esi</span><span class="p">;</span>
+<span class="k">return</span> <span class="n">eax</span><span class="p">;</span>
+</pre></div>
+</td></tr></table>
+
+<p>合并化简一下：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">return</span> <span class="nf">func4</span><span class="p">(</span><span class="n">ebx</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">func4</span><span class="p">(</span><span class="n">ebx</span><span class="o">-</span><span class="mi">2</span><span class="p">);</span>
+</pre></div>
+</td></tr></table>
+
+<p>回想一下你学 C 语言的时候做过的那些「数学题」，这个式子不就是 Fibonacci 数列的递推公式吗？这下 <code>func4</code> 就明了了：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">num</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">func4</span><span class="p">(</span><span class="n">ebx</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">func4</span><span class="p">(</span><span class="n">ebx</span><span class="o">-</span><span class="mi">2</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>结合到一起，<code>phase_4</code> 等于在问：第几个数对应的 Fibonacci 数等于 <code>55</code>？所以答案是 <code>9</code>。这一阶段考察的是递归，难点在于对函数的传参和返回是否熟悉，堆栈的变化是否清楚，比如：<code>add 0xfffffff4,%esp</code> 等价于 <code>sub $0xC,%esp</code>。此外出现了一些等价于 <code>nop</code> 的指令，也会对分析产生干扰，如：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x">mov %esi,%esi</span>
+</pre></div>
+</td></tr></table>
+
+<p>不过这些问题都可以通过耐心的进行「翻译」，以及 Google 进行解决。</p>
+<h1 id="_6">第五阶段</h1>
+<blockquote>
+<p>路漫漫其修远兮，吾将上下而求索</p>
+</blockquote>
+<p>只剩最后两阶段了，让我们看看第五阶段又有哪些花样。一眼就看到了 <code>string_length</code> 这个函数，那么我们这次的输入应该是字符串，不再是数字了，紧跟着的 <code>cmp 0x6,%eax</code> 告诉我们字符串长度是 6。有了这些信息，我们就可以开始调试看看了，先输入 <code>hello5</code>，将断点设到 <code>8048d43</code>，单步调试，发现如我们所料，跳转到了 <code>8048d4d</code>。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048d4d:   31 d2                   xor    %edx,%edx</span>
+<span class="x"> 8048d4f:   8d 4d f8                lea    -0x8(%ebp),%ecx</span>
+<span class="x"> 8048d52:   be 20 b2 04 08          mov    $0x804b220,%esi</span>
+<span class="x"> 8048d57:   8a 04 1a                mov    (%edx,%ebx,1),%al</span>
+<span class="x"> 8048d5a:   24 0f                   and    $0xf,%al</span>
+<span class="x"> 8048d5c:   0f be c0                movsbl %al,%eax</span>
+<span class="x"> 8048d5f:   8a 04 30                mov    (%eax,%esi,1),%al</span>
+<span class="x"> 8048d62:   88 04 0a                mov    %al,(%edx,%ecx,1)</span>
+<span class="x"> 8048d65:   42                      inc    %edx</span>
+<span class="x"> 8048d66:   83 fa 05                cmp    $0x5,%edx</span>
+<span class="x"> 8048d69:   7e ec                   jle    8048d57 &lt;phase_5+0x2b&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>注意到 <code>8048d69</code> 的跳转是往回跳，意味着很有可能是个循环。至于是不是，我们先翻译一遍：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// edx</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">ecx</span> <span class="o">=</span> <span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x8</span><span class="p">;</span>
+<span class="n">esi</span> <span class="o">=</span> <span class="mh">0x804b220</span><span class="p">;</span>
+
+<span class="k">do</span> <span class="p">{</span>
+    <span class="n">al</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ebx</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xF</span><span class="p">;</span>
+    <span class="n">al</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">esi</span> <span class="o">+</span> <span class="n">al</span><span class="p">);</span>
+    <span class="o">*</span><span class="p">(</span><span class="n">ecx</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="n">al</span><span class="p">;</span>
+
+    <span class="n">i</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">);</span>
+</pre></div>
+</td></tr></table>
+
+<p>为了进一步简化，我们需要知道 <code>ebx</code>、<code>ecx</code>、<code>esi</code> 的值。通过 <code>x/s</code>、<code>x/8x</code> 指令发现：</p>
+<ul>
+<li><code>ebx</code>：指向输入 <code>hello5</code></li>
+<li><code>ecx</code>：指向一个占 8 字节的数组，数组已经被初始化为 0</li>
+<li><code>esi</code>：指向字符串 <code>isrveawhobpnutfg\260\001</code></li>
+</ul>
+<p>因为这几个寄存器都是一些字符串，所以类似于 <code>*(ebx+i)</code> 的表达式其实就是 <code>ebx[i]</code>，并且这里的 do-while 循环可以转换为 for 循环。进一步简化得到：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// $ebp-8, $ebp-7, ..., $ebp-1</span>
+<span class="kt">char</span> <span class="n">tmp</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0xF</span><span class="p">;</span>
+    <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;isrveawhobpnutfg</span><span class="se">\260\001</span><span class="s">&quot;</span><span class="p">[</span><span class="n">num</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>上面的代码根据我们输入字符串从 <code>isrveawhobpnutfg</code>（注意 <code>num</code> 小于 16）选出了 5 个字符。接着看到 <code>strings_not_equal</code> 这个函数，让我们不禁猜想是不是拿这 5 个字符与另一个字符串进行比较，相等就拆除这一阶段。不管这段逻辑是不是，我们尝试一把，先搞清 <code>0x804980b</code> 指向 <code>giants</code>。<code>giants</code> 对应于 <code>isrveawhobpnutfg</code> 的位置如下表：</p>
+<table>
+<thead>
+<tr>
+<th>g</th>
+<th>i</th>
+<th>a</th>
+<th>n</th>
+<th>t</th>
+<th>s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>15</td>
+<td>0</td>
+<td>5</td>
+<td>11</td>
+<td>13</td>
+<td>1</td>
+</tr>
+<tr>
+<td>'o' &amp; 0xF</td>
+<td>'p' &amp; 0xF</td>
+<td>'e' &amp; 0xF</td>
+<td>'k' &amp; 0xF</td>
+<td>'m' &amp; 0xF</td>
+<td>'a' &amp; 0xF</td>
+</tr>
+</tbody>
+</table>
+<p>我们将输入换成 <code>opekma</code>，成功！看来这部分逻辑和猜想的一样，就不用再看这部分代码了。</p>
+<blockquote>
+<p>Good work!  On to the next...</p>
+</blockquote>
+<h1 id="_7">第六阶段</h1>
+<p><code>phase_6</code> 给人的第一印象是：有点长，各种跳转，看来并不简单。在深入研究之前，我们先去掉一些等价于 <code>nop</code> 的指令：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x">lea 0x0(%esi),%esi</span>
+<span class="x">lea 0x0(%esi,%eiz,1),%esi</span>
+</pre></div>
+</td></tr></table>
+
+<p>将断点设在 <code>8048dc3</code>，我们看看跳转之前做了些什么。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048dc0:   8d 45 e8                lea    -0x18(%ebp),%eax</span>
+<span class="x"> 8048dc3:   8b 04 b8                mov    (%eax,%edi,4),%eax</span>
+<span class="x"> 8048dc6:   48                      dec    %eax</span>
+<span class="x"> 8048dc7:   83 f8 05                cmp    $0x5,%eax</span>
+<span class="x"> 8048dca:   76 05                   jbe    8048dd1 &lt;phase_6+0x39&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>上面的代码等价于：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// ptr = ebp - 0x18;</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">ptr</span> <span class="o">+</span> <span class="n">edi</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// do something</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">explode_bomb</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>容易发现 <code>$ebp-0x18</code> 是个指针，指向的值是 <code>1</code>，正好是我们输入的第一个整数，当然也有可能是程序中的一个常量。具体是哪种情况，暂不清楚，先放在一边，继续单步执行，我们遇到了一个循环。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048de6:   8b 55 c8                mov    -0x38(%ebp),%edx</span>
+<span class="x"> 8048de9:   8b 04 32                mov    (%edx,%esi,1),%eax</span>
+<span class="x"> 8048dec:   3b 04 9e                cmp    (%esi,%ebx,4),%eax</span>
+<span class="x"> 8048def:   75 05                   jne    8048df6 &lt;phase_6+0x5e&gt;</span>
+<span class="x"> 8048df1:   e8 06 07 00 00          call   80494fc &lt;explode_bomb&gt;</span>
+<span class="x"> 8048df6:   43                      inc    %ebx</span>
+<span class="x"> 8048df7:   83 fb 05                cmp    $0x5,%ebx</span>
+<span class="x"> 8048dfa:   7e ea                   jle    8048de6 &lt;phase_6+0x4e&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>并不清楚是在做什么，不管这么多，先写出它的等价 C 代码：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// 8048de3: ptr = ebp - 0x18</span>
+<span class="k">do</span> <span class="p">{</span>
+    <span class="c1">// 8048dec</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">ptr</span> <span class="o">+</span> <span class="o">*</span><span class="p">(</span><span class="n">ebp</span><span class="o">-</span><span class="mh">0x38</span><span class="p">))</span> <span class="o">==</span> <span class="o">*</span><span class="p">(</span><span class="n">ptr</span> <span class="o">+</span> <span class="n">ebx</span><span class="o">*</span><span class="mi">4</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">explode_bomb</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="n">ebx</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">ebx</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">);</span>
+</pre></div>
+</td></tr></table>
+
+<p>光从这段代码很难推断出什么有用信息，我们只能知道：</p>
+<ol>
+<li><code>ebx</code> 是个计数变量</li>
+<li><code>ptr</code> 是个指针，看着像是指向一个整型数组</li>
+</ol>
+<p>往下看：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="x"> 8048dfc:   47                      inc    %edi</span>
+<span class="x"> 8048dfd:   83 ff 05                cmp    $0x5,%edi</span>
+<span class="x"> 8048e00:   7e be                   jle    8048dc0 &lt;phase_6+0x28&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>这三句告诉我们上面分析的两段代码其实是处于一个大的循环中，结合之前的分析，我们把 <code>8048dc0</code> 到 <code>8048e00</code> 这段代码翻译出来，然后写出它的等价逻辑：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// ptr = ebp - 0x18;</span>
+<span class="c1">// i = edi;</span>
+<span class="c1">// j = ebx;</span>
+
+<span class="c1">// 8048db8: edi = 0;</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">ptr</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">explode_bomb</span><span class="p">();</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">ptr</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="o">*</span><span class="p">(</span><span class="n">ptr</span> <span class="o">+</span> <span class="n">j</span><span class="o">*</span><span class="mi">4</span><span class="p">))</span>
+            <span class="n">explode_bomb</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>我们从 <code>8048dc0</code> 往上看，<code>8048db8</code> 告诉我们 <code>i</code> 被初始化了 <code>0</code>，所以循环总共迭代了 6 次，可能是对我们输入的 6 个整数做了处理。再看看 <code>ptr + i*4</code>，也就是 <code>ebp-0x18</code>、<code>ebp-0x14</code>、...、<code>ebp-0x04</code> 所指向的值，发现正好对应于输入的 6 个整数，所以 <code>*(ptr + i*4)</code> 等价于 <code>nums[i]</code>：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">explode_bomb</span><span class="p">();</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">nums</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+            <span class="n">explode_bomb</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>所以 <code>8048dc0</code> 到 <code>8048e00</code> 告诉我们输入的 6 个整数必须满足：</p>
+<ol>
+<li>小于等于 6</li>
+<li>互不相等</li>
+</ol>
+<p>依葫芦画瓢是个好办法，但是我们先不急着翻译，看看各种跳转把执行流导向了哪里：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="mf">8048e02</span>
+<span class="p">...</span>
+<span class="mf">8048e10</span>
+<span class="p">...</span>
+<span class="mf">8048e1</span><span class="n">f</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">ebx</span> <span class="o">&gt;=</span> <span class="o">*</span><span class="p">(</span><span class="n">eax</span> <span class="o">+</span> <span class="n">ecx</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">goto</span> <span class="mf">8048e38</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="mf">8048e26</span>
+    <span class="mf">8048e29</span>
+    <span class="k">do</span> <span class="p">{</span>
+        <span class="mf">8048e30</span>
+        <span class="mf">8048e33</span>
+    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">ebx</span> <span class="o">&lt;</span> <span class="n">eax</span><span class="p">);</span>
+
+    <span class="mf">8048e38</span>
+    <span class="p">...</span> 
+    <span class="mf">8048e3</span><span class="n">e</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">edi</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">goto</span> <span class="mf">8048e10</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="mf">8048e44</span>
+        <span class="p">...</span>
+        <span class="mf">8048e4</span><span class="n">f</span>
+
+        <span class="k">do</span> <span class="p">{</span>
+            <span class="mf">8048e52</span>
+            <span class="p">...</span>
+            <span class="mf">8048e5</span><span class="n">a</span>
+        <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">edi</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">);</span>
+
+        <span class="mf">8048e60</span>
+        <span class="p">...</span>
+        <span class="mf">8048e70</span>
+        <span class="mf">8048e73</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">eax</span> <span class="o">&gt;=</span> <span class="o">*</span><span class="n">edx</span><span class="p">)</span> <span class="p">{</span>
+            <span class="mf">8048e7</span><span class="n">e</span>
+            <span class="mf">8048e81</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">edi</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">goto</span> <span class="mf">8048e70</span><span class="p">;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">return</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">explode_bomb</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>乍看之下，这个控制流十分复杂，但在进一步规约后，我们会发现都是些很简单的结构：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="mf">8048e02</span>
+<span class="p">...</span>
+<span class="mf">8048e0</span><span class="n">d</span>
+<span class="k">do</span> <span class="p">{</span>
+    <span class="mf">8048e10</span>
+    <span class="p">...</span>
+    <span class="mf">8048e1</span><span class="n">f</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ebx</span> <span class="o">&lt;</span> <span class="o">*</span><span class="p">(</span><span class="n">eax</span> <span class="o">+</span> <span class="n">ecx</span><span class="p">))</span> <span class="p">{</span>
+        <span class="mf">8048e26</span>
+        <span class="mf">8048e29</span>
+        <span class="k">do</span> <span class="p">{</span>
+            <span class="mf">8048e30</span>
+            <span class="mf">8048e33</span>
+        <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">ebx</span> <span class="o">&lt;</span> <span class="n">eax</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="mf">8048e38</span>
+    <span class="p">...</span> 
+    <span class="mf">8048e3</span><span class="n">e</span>
+<span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">edi</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">);</span>
+
+<span class="mf">8048e44</span>
+<span class="p">...</span>
+<span class="mf">8048e4</span><span class="n">f</span>
+<span class="k">do</span> <span class="p">{</span>
+    <span class="mf">8048e52</span>
+    <span class="p">...</span>
+    <span class="mf">8048e5</span><span class="n">a</span>
+<span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">edi</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">);</span>
+
+<span class="mf">8048e60</span>
+<span class="p">...</span>
+<span class="mf">8048e6</span><span class="n">c</span>
+<span class="k">do</span> <span class="p">{</span>
+    <span class="mf">8048e70</span>
+    <span class="mf">8048e73</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">eax</span> <span class="o">&lt;</span> <span class="o">*</span><span class="n">edx</span><span class="p">)</span>
+        <span class="n">explode_bomb</span><span class="p">();</span>
+    <span class="mf">8048e7</span><span class="n">e</span>
+    <span class="mf">8048e81</span>
+<span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">edi</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">);</span>
+<span class="k">return</span><span class="p">;</span>
+</pre></div>
+</td></tr></table>
+
+<p>我们耐心的把这些汇编翻译过来，然后化简就得到了：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// i = edi</span>
+<span class="c1">// j = ebx</span>
+<span class="c1">// ptr = esi</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x34</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">];</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ptr</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ptr</span> <span class="o">+</span> <span class="mh">0x8</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="o">*</span><span class="p">(</span><span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x30</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span> <span class="o">=</span> <span class="n">ptr</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">ptr</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x30</span><span class="p">);</span>
+<span class="o">*</span><span class="p">(</span><span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x34</span><span class="p">)</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x30</span><span class="p">);</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="o">*</span><span class="p">(</span><span class="n">ptr</span> <span class="o">+</span> <span class="mh">0x8</span><span class="p">)</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x30</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="mi">4</span><span class="p">);</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x30</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="mi">4</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="o">*</span><span class="p">(</span><span class="n">ptr</span> <span class="o">+</span> <span class="mh">0x8</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">ptr</span> <span class="o">=</span> <span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x34</span><span class="p">;</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">ptr</span> <span class="o">&lt;</span> <span class="o">**</span><span class="p">(</span><span class="n">ptr</span> <span class="o">+</span> <span class="mh">0x8</span><span class="p">))</span>
+        <span class="n">explode_bomb</span><span class="p">();</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ptr</span> <span class="o">+</span> <span class="mh">0x8</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>什么都看不出来，但是我们发现有些地址反复出现，比如：<code>ebp-0x34</code>、<code>ebp-0x30</code>，查看他们的值发现无一例外都指向一个地址。对照翻译的逻辑跑一遍，发现 16 到 19 行代码很有规律，跟踪几次迭代后会发现 17 和 18 两行代码很像链表的操作：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">ptr</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">node</span><span class="p">;</span>
+<span class="n">ptr</span> <span class="o">=</span> <span class="n">node</span><span class="p">;</span>
+<span class="n">node</span> <span class="o">=</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+</pre></div>
+</td></tr></table>
+
+<p>而 <code>ebp-0x30</code> 似乎就是用来构造链表的结构体数组，要搞清楚这一点，最简单的办法莫过于查看这个数组的每一个值，看看相互之间有没有关联。为此，我们回头找初始化的代码，注意到第 8 行对 <code>ebp-0x30</code>、<code>ebp-0x2c</code>、...、<code>ebp-0x1c</code> 进行了赋值，且 <code>ebp-0x34</code> 的值在 <code>8048da4</code> 处被赋值成了一个地址 <code>0x804b26c</code>。我们跟踪第 6 行，发现有 6 个地址相互有关联：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="o">*</span><span class="p">(</span><span class="mh">0x804b26c</span> <span class="o">+</span> <span class="mh">0x8</span><span class="p">)</span> <span class="o">=</span> <span class="mh">0x804b260</span>
+<span class="o">*</span><span class="p">(</span><span class="mh">0x804b260</span> <span class="o">+</span> <span class="mh">0x8</span><span class="p">)</span> <span class="o">=</span> <span class="mh">0x804b254</span>
+<span class="o">*</span><span class="p">(</span><span class="mh">0x804b254</span> <span class="o">+</span> <span class="mh">0x8</span><span class="p">)</span> <span class="o">=</span> <span class="mh">0x804b248</span> 
+<span class="o">*</span><span class="p">(</span><span class="mh">0x804b248</span> <span class="o">+</span> <span class="mh">0x8</span><span class="p">)</span> <span class="o">=</span> <span class="mh">0x804b23c</span>
+<span class="o">*</span><span class="p">(</span><span class="mh">0x804b23c</span> <span class="o">+</span> <span class="mh">0x8</span><span class="p">)</span> <span class="o">=</span> <span class="mh">0x804b230</span>
+<span class="o">*</span><span class="p">(</span><span class="mh">0x804b230</span> <span class="o">+</span> <span class="mh">0x8</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</td></tr></table>
+
+<p>这显然是一个链表结构，而 <code>+0x8</code> 简直和 <code>-&gt;next</code> 一模一样，替换一下：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// i = edi</span>
+<span class="c1">// j = ebx</span>
+<span class="c1">// ptr = esi</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">];</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ptr</span> <span class="o">=</span> <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="o">*</span><span class="p">(</span><span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x30</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span> <span class="o">=</span> <span class="n">ptr</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">ptr</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x30</span><span class="p">);</span>
+<span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x30</span><span class="p">);</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x30</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="mi">4</span><span class="p">);</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ebp</span> <span class="o">-</span> <span class="mh">0x30</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="mi">4</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">ptr</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">ptr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">ptr</span> <span class="o">&lt;</span> <span class="o">*</span><span class="n">ptr</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span>
+        <span class="n">explode_bomb</span><span class="p">();</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>是不是感觉整个世界都明朗了，哈哈。接着就只需要弄明白，<code>*(ebp - 0x30 + i*4)</code> 到底是个什么东西。注意到第 9 行，因为 <code>ptr</code> 是个指针，而 <code>i*4</code> 在前面已经见过了，种种这些都暗示我们 <code>ebp - 0x30</code> 是个指针数组，我们再据此改写一下：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// i = edi</span>
+<span class="c1">// j = ebx</span>
+<span class="c1">// ptr = esi</span>
+<span class="c1">// ptrs = ebp - 0x30</span>
+<span class="c1">// nodes = {</span>
+<span class="c1">//     0x804b26c, 0x804b260, 0x804b254,</span>
+<span class="c1">//     0x804b248, 0x804b23c, 0x804b230,</span>
+<span class="c1">// }</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">];</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ptr</span> <span class="o">=</span> <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">ptrs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ptr</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">ptr</span> <span class="o">=</span> <span class="n">ptrs</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">ptrs</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="n">ptrs</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+<span class="n">ptr</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+<span class="n">ptr</span> <span class="o">=</span> <span class="n">ptrs</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">ptr</span> <span class="o">&lt;</span> <span class="o">*</span><span class="n">ptr</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span>
+        <span class="n">explode_bomb</span><span class="p">();</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>这下一切都清楚了，第 5 到 11 行根据我们输入的数字将指针数组 <code>ptrs</code> 初始化，第 13 到 18 行将 <code>ptrs</code> 中的结构体依次链接起来，第 20 到 25 行告诉我们链接起来形成的链表必须满足递减的规律。接下来的事情就简单了，打印出 <code>nodes</code> 中那些地址指向的值，然后排序以后得出答案：<code>4 2 6 3 1 5</code></p>
+<table>
+<thead>
+<tr>
+<th>Address</th>
+<th>Value</th>
+<th>Order</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x804b26c</td>
+<td>0x000000fd</td>
+<td>5</td>
+</tr>
+<tr>
+<td>0x804b260</td>
+<td>0x000002d5</td>
+<td>2</td>
+</tr>
+<tr>
+<td>0x804b254</td>
+<td>0x0000012d</td>
+<td>4</td>
+</tr>
+<tr>
+<td>0x804b248</td>
+<td>0x000003e5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>0x804b23c</td>
+<td>0x000000d4</td>
+<td>6</td>
+</tr>
+<tr>
+<td>0x804b230</td>
+<td>0x000001b0</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Congratulations! You've defused the bomb!</p>
+</blockquote>
+<p>至此，我们已经成功拆除了炸弹。</p>
+<h1 id="_8">隐藏阶段</h1>
+<p>第六阶段非常难，没有动手写过一些 C 语言代码，几乎很难察觉到其中的奥秘。不过隐藏阶段才是真正的 BOSS……这里不详细说明了，照着上面的办法，慢慢的尝试，花点时间也能做出来。下面给几个提示，有兴趣的同学可以尝试尝试：</p>
+<ul>
+<li>在第四阶段加点料才能进入隐藏阶段</li>
+<li><img alt="fun7_tree" src="https://dn-loggerhead.qbox.me/images/fun7_tree.png" /></li>
+</ul>
+<p>成功解决这个炸弹相信非常有成就感，不过其实拆除炸弹有个十分简单的办法——<code>Ctrl+C</code> :P</p>
+      </div>
+    </article>
+  </section>
+<div id="disqus_thread"></div>
+<script>
+var disqus_config = function () {
+    this.page.identifier = "逆向工程初体验";
+};
+
+(function() {
+    var d = document, s = d.createElement('script');
+    s.async = true;
+    s.src = "//loggerhead.disqus.com/embed.js";
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+})();
+</script>      </div>
+    </div>
+  </div>
+</div>
+
+ <footer class="page-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-8">
+        <p>
+          &copy;2016&nbsp; <a href="..">loggerhead</a>
+        </p>
+      </div>
+      <div class="col-xs-4">
+        <p class="pull-right">
+          <a href="#" class="back-to-top">
+            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+            回到顶部
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <div class="row hidden-when-phone">
+      <div class="col-xs-8">
+        <p>
+          <a href="http://www.miitbeian.gov.cn/" target="_blank">粤ICP备16007488号</a>
+          &middot; Powered by <a href="https://github.com/getpelican/pelican" target="_blank">Pelican</a>
+        </p>
+
+        <p>
+          本站文章均为原创，并遵循 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh_TW" target="_blank">CC BY-SA 4.0 协议</a>
+        </p>
+      </div><!--/.col-xs-8 -->
+
+      <div class="col-xs-4">
+        <p class="pull-right">
+          <a href="https://www.upyun.com/zh/league.html" target="_blank">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAAtCAMAAAAZUYxJAAAAtFBMVEUAAABPrtxPrtxPrtxPrtxPrtxlZ2ZlZ2ZPrtxlZ2ZRqdRlZ2ZPrtxPrtxPrtxPrtxPrtxlZ2ZPrtxlZ2ZPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxlZ2ZPrtxPrtxPrtxlZ2ZlZ2ZPrtxlZ2ZlZ2ZPrtxPrtxlZ2ZlZ2ZlZ2ZlZ2ZlZ2ZPrtxPrtxlZ2ZPrtxlZ2ZlZ2ZlZ2ZPrtxPrtxlZ2ZPrtxlZ2bPPWi/AAAAOnRSTlMAgNCQ8aAQcD8fA/FPMevhsDD5wLp1cCHZypmHOwyrooFTGhLh0sSwinlfXfju67yMRyfcooZ4RS0XProUtAAAAZlJREFUSMft02tT4jAUxvHTNtAaobjd3iyUq1zE1V1dr0++//fypMGZCrbw1jG/N2nD8KcTTsmyLOvH6sUC4Tio7fxWyufll1KKqKu0P7fLpy7veUCHlwAAfxMYELsAHKIOtCiMe2TICQxPNqeNq7OjaWNGlX+Ixo4TAxg2p6e+/8jL32PpVZomLnBJWhZdzomNQiBrTJ/x3Y1ej6Q9XQIi0tJwQZUAGC7KlrS8VermhHS/+khuR8U17cRg+bYxTUvePTUtL+5p0iejdIJ5vwCKxqc+3z315IR0wsftLMgwB51Uf+9aqc1B2uf1gYbAapc2x1p+mc4nfDGnOikQE015jje+v6lNyPPaTMgMQJGmXpUuIyBO0tQ9SFdDIumTAf4Tvd0p43CupYsP1eQaB2mBF9oTmKF8WF+dGybNF3fLaZfYYpgLAGbCZOIKg6ehEEK/Gq98R2OIraS6Xqh//zNz1ntmQEgtMgGEbg2HkZet6Z6ndQbAmNr0c+xbZdSa9rATZtRK3l87dcmIqD2duJXYmZNlWZb17b0DTmto7227YPgAAAAASUVORK5CYII=" />
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+    <script src="../theme/js/bag.2.0.2.min.js"></script>
+
+<script id="myscripts">
+bag = new window.Bag();
+
+bag.require([
+    "//cdn.bootcss.com/jquery/2.2.1/jquery.min.js",
+    "//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"
+]);
+
+function load_css(url, done) {
+    var link  = document.createElement('link');
+    link.rel  = 'stylesheet';
+    link.href = url;
+    link.onload = done;
+    document.head.appendChild(link);
+}
+
+function load_js(url, done) {
+    var script = document.createElement('script');
+    script.src = url;
+    script.onload = done;
+    document.body.appendChild(script);
+}
+
+function gestureStart() {
+    for (i = 0; i < metas.length; i++) {
+        if (metas[i].name == "viewport") {
+            metas[i].content = "width=device-width, minimum-scale=0.25, maximum-scale=1.6";
+        }
+    }
+}
+
+(function screen_suit() {
+    var metas = document.getElementsByTagName('meta');
+    var ua = navigator.userAgent;
+    if (ua.match(/iPhone/i)) {
+        for (var i = 0; i < metas.length; i++) {
+            if (metas[i].name == "viewport") {
+                metas[i].content = "width=device-width, minimum-scale=1.0, maximum-scale=1.0";
+            }
+        }
+        document.addEventListener("gesturestart", gestureStart, false);
+    }
+})();
+
+// See https://gist.github.com/vartan/ab195e5a502a47e0c3e5
+(function fix_hover_behavior() {
+    if('ontouchstart' in document.documentElement) {
+        for(var sheetI = document.styleSheets.length - 1; sheetI >= 0; sheetI--) {
+            var sheet = document.styleSheets[sheetI];
+            if(sheet.cssRules) {
+                for(var ruleI = sheet.cssRules.length - 1; ruleI >= 0; ruleI--) {
+                    var rule = sheet.cssRules[ruleI];
+                    if(rule.selectorText) {
+                        rule.selectorText = rule.selectorText.replace(":hover", ":active");
+                    }
+                }
+            }
+        }
+    }
+})();
+
+(function add_class_to_chinese_em(class_name) {
+    var ems = document.getElementsByTagName("em");
+
+    for (var i = 0; i < ems.length; i++) {
+        var text = ems[i].textContent;
+        // if has chinese char
+        if(/.*[\u4e00-\u9fa5]+.*$/.test(text)) {
+            ems[i].className += " " + class_name;
+        }
+    }
+})('chinese');
+
+// IE10 viewport hack for Surface/desktop Windows 8 bug
+(function fix_ie10_viewport_bug() {
+    if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+        bag.require([
+            "//maxcdn.bootstrapcdn.com/css/ie10-viewport-bug-workaround.css",
+            "//maxcdn.bootstrapcdn.com/js/ie10-viewport-bug-workaround.js"
+        ]);
+    }
+})();
+
+(function load_katex_when_need(class_name) {
+    var maths = document.getElementsByClassName(class_name);
+    if (maths.length == 0) {
+        return;
+    }
+
+    bag.require([
+        "//cdn.bootcss.com/KaTeX/0.6.0/katex.min.js"
+    ]).then(function() {
+        for (var i = 0; i < maths.length; i++) {
+            var math = maths[i];
+
+            var displayMode = null;
+            if (math.tagName == "SPAN") {
+                displayMode = false;
+            } else if (math.tagName == "DIV") {
+                displayMode = true;
+            }
+
+            if (displayMode === null) {
+                console.log("Cannot render " + math);
+            } else {
+                try {
+                    katex.render(math.textContent, maths[i], { displayMode: displayMode });
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        }
+    });
+
+    load_css("//cdn.bootcss.com/KaTeX/0.6.0/katex.min.css");
+})("math");
+</script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+  <script>
+  bag.require([
+    "//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js",
+    "//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"
+  ]);
+  </script>
+<![endif]-->
+ 
+</body>
+</html>

@@ -1,0 +1,704 @@
+<!Doctype html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+<meta name="renderer" content="webkit">
+<meta name="HandheldFriendly" content="True">
+<meta name="google-site-verification" content="xRiYQAQ0h0n3RXqrq0GgrdFm3BMFqDvDwwiRylv0YhQ">
+
+<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/android-chrome-192x192.png" sizes="192x192">
+<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+<meta name="theme-color" content="#ffffff">
+<meta name="author" content="loggerhead" />    <meta name="keywords" content="LaTeX" />
+
+  <meta name="description" content="本文将介绍以下内容： LaTeX 对空格、换行、注释的处理 LaTeX 命令的基本形式 如何进一步学习 LaTeX 但是不介绍： 如何安装 LaTeX。如果你是 Mac 用户，那么可以参考这篇文章。 基本的排版 常用的命令和环境" />
+
+  <title>  LaTeX 排版简介--快速入门
+</title>
+
+<link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="../theme/css/style.1cd8932.css">
+ 
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+  <link href="../atom.xml" rel="alternate" type="application/atom+xml">
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="..">loggerhead's blog</a>
+    </div>
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../archives.html">归档</a></li>
+        <li><a href="../404.html">关于</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/loggerhead" target="_blank">GitHub</a></li>
+        <li><a href="https://www.hackerrank.com/loggerhead" target="_blank">HackerRank</a></li>
+        <li><a href="https://douban.com/people/loggerhead" target="_blank">豆瓣</a></li>
+      </ul>
+    </div><!--/.navbar-header -->
+  </div><!--/.container -->
+</nav><!--/.navbar -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="markdown-body article-list">
+  <section id="content">
+    <article>
+      <header class="page-header">
+        <h1>
+          <a class="article-title" href="../posts/latex-pai-ban-jian-jie-kuai-su-ru-men.html" rel="bookmark" title="Permalink to LaTeX 排版简介--快速入门">
+            LaTeX 排版简介--快速入门
+          </a>
+        </h1>
+<footer class="post-info">
+  <div class="row">
+    <div class="col-xs-8">
+      <!-- <span class="label label-default">Tags</span> -->
+        <a class="tag btn btn-xs" href="../tag/latex.html">
+          LaTeX
+        </a>
+    </div>
+
+    <div class="col-xs-4 time">
+      <time class="pull-right" datetime="2015-04-18T16:24:00+08:00">
+        2015-04-18
+      </time>
+    </div>
+  </div>
+</footer>        <hr>
+      </header>
+      <div class="entry-content">
+        <p>本文将介绍以下内容：</p>
+<ul>
+<li>LaTeX 对空格、换行、注释的处理</li>
+<li>LaTeX 命令的基本形式</li>
+<li>如何进一步学习 LaTeX</li>
+</ul>
+<p>但是<strong>不介绍</strong>：</p>
+<ul>
+<li>如何安装 LaTeX。如果你是 Mac 用户，那么可以参考<a href="../posts/latex-zai-mac-xia-de-zhong-wen-huan-jing-pei-zhi.html">这篇文章</a>。</li>
+<li>基本的排版</li>
+<li>常用的命令和环境</li>
+</ul>
+
+
+<h1 id="_1">你好，世界</h1>
+<p>我们先看一个最简单的示例。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c">% 文档类型是 article</span>
+<span class="k">\documentclass</span><span class="nb">{</span>article<span class="nb">}</span>
+<span class="c">% --- 导言区开始 ---</span>
+<span class="c">% 使用 xeCJK 宏包，用于排版中日韩文字，CJK 是 China、Japan、Korea 的缩写</span>
+<span class="k">\usepackage</span><span class="nb">{</span>xeCJK<span class="nb">}</span>
+<span class="c">% 设置正文罗马族的 CJK 字体为 STSong，粗体：STHeiti，斜体：STKaiti</span>
+<span class="k">\setCJKmainfont</span><span class="na">[BoldFont=STHeiti,ItalicFont=STKaiti]</span><span class="nb">{</span>STSong<span class="nb">}</span>
+<span class="c">% 设置正文无衬线族的 CJK 字体为 STXihei，粗体：STHeiti</span>
+<span class="k">\setCJKsansfont</span><span class="na">[BoldFont=STHeiti]</span><span class="nb">{</span>STXihei<span class="nb">}</span>
+<span class="c">% 设置正文等宽族的 CJK 字体为 STFangsong</span>
+<span class="k">\setCJKmonofont</span><span class="nb">{</span>STFangsong<span class="nb">}</span>
+<span class="c">% --- 导言区结束 ---</span>
+<span class="k">\begin</span><span class="nb">{</span>document<span class="nb">}</span>
+你好，世界
+<span class="k">\end</span><span class="nb">{</span>document<span class="nb">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>相信看完示例，你会有很多疑问，比如：</p>
+<ol>
+<li><code>%</code> 是注释当前行吗？</li>
+<li>命令都是以 <code>\</code> 开头吗？</li>
+<li>既然 <code>\documentclass</code> 有参数，那是不是有别的文档类型？</li>
+<li>宏包是什么，有什么用？</li>
+<li>导言区是什么？</li>
+<li><code>\begin{document}</code> 和 <code>\end{document}</code> 的作用是什么？</li>
+</ol>
+<p>如果将示例与下面的代码对比，是不是发现一些相似之处？相信看完下文你会得到答案的。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// 导入 stdio.h 头文件</span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="c1">// main begin</span>
+<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;你好，世界</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// main end</span>
+</pre></div>
+</td></tr></table>
+
+<h1 id="_2">输入文件</h1>
+<p>虽说大部分 LaTeX 的规则或命令都有一致的规律，但是也存在一些与直觉相违背的地方，特别是某些特殊的字符。这里先将这些字符列出来，再对某些字符进行说明。</p>
+<table>
+<thead>
+<tr>
+<th>显示</th>
+<th>输入</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>空格 x 1</td>
+<td>空白字符 x N、换行 x 1</td>
+</tr>
+<tr>
+<td>新段</td>
+<td>换行 x N (N &gt; 1)</td>
+</tr>
+<tr>
+<td>新行</td>
+<td>\\</td>
+</tr>
+<tr>
+<td>\</td>
+<td>\textbackslash</td>
+</tr>
+<tr>
+<td>#</td>
+<td>\#</td>
+</tr>
+<tr>
+<td>$</td>
+<td>\$</td>
+</tr>
+<tr>
+<td>%</td>
+<td>\%</td>
+</tr>
+<tr>
+<td>^</td>
+<td>\^</td>
+</tr>
+<tr>
+<td>&amp;</td>
+<td>\&amp;</td>
+</tr>
+<tr>
+<td>_</td>
+<td>\_</td>
+</tr>
+<tr>
+<td>{</td>
+<td>\{</td>
+</tr>
+<tr>
+<td>}</td>
+<td>\}</td>
+</tr>
+<tr>
+<td>~</td>
+<td>\~</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">导言区</h2>
+<p><code>\documentclass</code> 和 <code>\begin{document}</code> 之间的部分叫做<strong>导言区</strong>（preamble）。我们可以在导言区加载宏包或者设置影响整个文档的样式，比如：</p>
+<ul>
+<li><code>\usepackage{minted}</code> 加载 minted 宏包，用于排版代码 </li>
+<li>用 <code>\setCJKxxxxfont{...}</code> 设置中文字体</li>
+<li><code>\setlength{\parskip}{1em}</code> 设置段间距为 <a href="http://tex.stackexchange.com/questions/8260/what-are-the-various-units-ex-em-in-pt-bp-dd-pc-expressed-in-mm">1em</a></li>
+</ul>
+<p>LaTeX 文档必须以 <code>\documentclass</code> 开头。而所有<strong>想要显示的内容</strong>都必须位于 <code>\begin{document}</code> 和 <code>\end{document}</code> 之间。 </p>
+<h2 id="_4">空格</h2>
+<p>LaTeX 第一个与直觉相违背的地方就是空白字符。它既不像C语言全部忽略，也不是有多少就显示多少。而是将<strong>多个空白字符当做一个空格</strong>处理。这里所说的空白字符包括：空格、制表符（tab）或一个换行。</p>
+<p><img alt="spaces example" src="https://dn-loggerhead.qbox.me/images/spaces_example.png" /></p>
+<p>左边是输入，右边是输出（下文同）。输入是 <code>你好，[换行][空格x2]世界</code> 。</p>
+<h2 id="_5">换行</h2>
+<p>虽然换行也是空白字符，但对一个换行和多个换行的处理又有不同：</p>
+<ul>
+<li>一个换行 = 一个空格</li>
+<li>多个换行<strong>表示一个段落的结束和另一个段落的开始</strong>（和 Markdown 一样）。</li>
+</ul>
+<p><img alt="paragraph example" src="https://dn-loggerhead.qbox.me/images/paragraph_example.png" /></p>
+<h2 id="_6">注释</h2>
+<h3 id="_7">单行注释</h3>
+<p><code>%</code> 表示注释当前行，同时<strong>忽略换行和下一行开头的空白字符</strong>。</p>
+<p><img alt="comment example" src="https://dn-loggerhead.qbox.me/images/comment_example.png" /></p>
+<h3 id="_8">多行注释</h3>
+<p>先在导言区加入 <code>\usepackage{verbatim}</code> ，再像下图一样将注释放在 <code>\begin{comment}</code> 和 <code>\end{comment}</code> 之间就行了。</p>
+<p><img alt="multi-line comment example" src="https://dn-loggerhead.qbox.me/images/multi-line_comment_example.png" /></p>
+<p>因为一个换行等价于一个空格，所以上图多出来一个空格。如果不想要，这时候 <code>%</code> 就派上用场了。</p>
+<p><img alt="multi-line comment example" src="https://dn-loggerhead.qbox.me/images/multi-line_comment_notice_example.png" /></p>
+<h1 id="latex">LaTeX 命令</h1>
+<h2 id="_9">基本格式</h2>
+<p>LaTeX 命令的基本格式如下：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">\command</span><span class="na">[optional]</span><span class="nb">{</span>paramter<span class="nb">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>对有些命令来说，参数是必须的，放在 <code>paramter</code> 的位置。可选参数放在 <code>optional</code> 的位置。其中 <code>\command</code> 有三种形式：</p>
+<ul>
+<li>由<strong>对大小写敏感的字母</strong>组成，任何<strong>其他字符</strong>表示结束。如：<code>\newline</code></li>
+<li>由 <code>\</code> 紧挨着一个<strong>非字母字符</strong>组成。如：<code>\\</code></li>
+<li><code>\command*[optional]{paramter}</code> ，表示命令的变种。如：<code>\section*{}</code></li>
+</ul>
+<p><code>\command</code> 后面的所有空白字符都将被忽略，除非加一对花括号 <code>{}</code> 。</p>
+<p><img alt="command example" src="https://dn-loggerhead.qbox.me/images/command_example.png" /></p>
+<p>值得注意的是，<a href="http://tex.stackexchange.com/questions/6497/the-scope-of-latex-commands">LaTeX 命令并没有一致的作用域</a>。有些命令只影响它的参数，比如：<code>\emph{foo}</code>，而有些命令却影响整个段落，比如：<code>\noindent</code>。</p>
+<h2 id="_10">环境</h2>
+<p>环境是一种特殊的命令，它对包裹起来的内容起作用，其基本格式如下：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">\begin</span><span class="nb">{</span>environment-name<span class="nb">}</span>
+... text
+<span class="k">\end</span><span class="nb">{</span>environment-name<span class="nb">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>环境也能带参数，不过也没什么规律...比如：minipage、figure和picture环境能接受的参数就不尽相同。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">\begin</span><span class="nb">{</span>minipage<span class="nb">}</span>[position]<span class="nb">{</span>width<span class="nb">}</span>
+... text
+<span class="k">\end</span><span class="nb">{</span>minipage<span class="nb">}</span>
+
+<span class="k">\begin</span><span class="nb">{</span>figure<span class="nb">}</span>[placement]
+  <span class="c">% body of the figure</span>
+  <span class="k">\caption</span><span class="nb">{</span>figure title<span class="nb">}</span>
+<span class="k">\end</span><span class="nb">{</span>figure<span class="nb">}</span>
+
+<span class="k">\begin</span><span class="nb">{</span>picture<span class="nb">}</span>(width,height)(x offset,y offset)
+... picture commands
+<span class="k">\end</span><span class="nb">{</span>picture<span class="nb">}</span>
+</pre></div>
+</td></tr></table>
+
+<h2 id="documentclass">documentclass</h2>
+<p>所有的 LaTeX 文档都必须以 <code>\documentclass[options]{class}</code> 开头，指明文档类型。</p>
+<table>
+<thead>
+<tr>
+<th>class</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>article</td>
+<td>排版科学期刊、演示文档、短报告、程序文档、邀请函...</td>
+</tr>
+<tr>
+<td>proc</td>
+<td>一个基于article的会议文集类</td>
+</tr>
+<tr>
+<td>minimal</td>
+<td>最小的文档类型。只设置了页面尺寸和基本字体。主要用来debug</td>
+</tr>
+<tr>
+<td>report</td>
+<td>排版多章节长报告、短篇书籍、博士论文...</td>
+</tr>
+<tr>
+<td>book</td>
+<td>排版书籍</td>
+</tr>
+<tr>
+<td>slides</td>
+<td>排版幻灯片。该文档类使用大号sans serif字体。也可以考虑用Beamer类型</td>
+</tr>
+</tbody>
+</table>
+<p><code>options</code> 定义文档的行为，多个 option 用英文逗号分隔。最常见的 option 见下表：</p>
+<table>
+<thead>
+<tr>
+<th>options</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10pt / 11pt / 12pt</td>
+<td>设置文档的主要字体。默认是10pt</td>
+</tr>
+<tr>
+<td>a4paper / letterpaper/ a5paper / b5paper / executivepaper / legalpaper</td>
+<td>定义纸张的大小。默认是letterpaper。a4paper就是A4纸的大小</td>
+</tr>
+<tr>
+<td>fleqn</td>
+<td>设置行间公式为左对齐，而不是居中对齐</td>
+</tr>
+<tr>
+<td>leqno</td>
+<td>设置行间公式的编号为左对齐，而不是右对齐</td>
+</tr>
+<tr>
+<td>titlepage / notitlepage</td>
+<td>指定是否在文档标题后另起一页。article默认不开始新页，report和book则相反</td>
+</tr>
+<tr>
+<td>onecolumn / twocolumn</td>
+<td>以单栏或双栏的方式来排版文档</td>
+</tr>
+<tr>
+<td>twoside / oneside</td>
+<td>指定文档为双面或单面打印格式。article和report为单面，book为双面。注意：该选项只是作用于文档样式，而不会通知打印机以双面格式打印文档</td>
+</tr>
+<tr>
+<td>landscape</td>
+<td>将文档的打印输出布局设置为landscape模式</td>
+</tr>
+<tr>
+<td>openright / openany</td>
+<td>指定新的一章仅在奇数页开始还是在下一页开始。该选项对article不起作用，因为article没有“章”。report默认在下一页开始新一章，而book总是在奇数页开始</td>
+</tr>
+</tbody>
+</table>
+<p>比如：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">\documentclass</span><span class="na">[11pt,twoside,a4paper]</span><span class="nb">{</span>article<span class="nb">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>它告诉 LaTeX 以 article 的形式排版文章，设置基本的字体大小为 11pt，布局为适合在 A4 纸上双面打印的形式。</p>
+<h2 id="usepackage">usepackage</h2>
+<p>宏包的概念类似于编程语言里边库的概念，如果想包含图片、代码、彩色文字、流程图等等，你都得使用宏包。使用宏包的命令是：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">\usepackage</span><span class="na">[options]</span><span class="nb">{</span>package<span class="nb">}</span>
+</pre></div>
+</td></tr></table>
+
+<p><code>options</code> 与 <code>\documentclass</code> 的 <code>options</code> 相似，用于指定宏包的一些特性。</p>
+<p>如果想了解某个宏包怎么使用，有哪些参数。你可以在终端输入 <code>texdoc</code> 查看宏包的文档。也可以通过查看 <a href="http://book.douban.com/subject/1418356/">The LATEX Companion</a> 来获取需要的信息。</p>
+<h3 id="_11">安装宏包</h3>
+<h4 id="_12">自动安装</h4>
+<h5 id="mactex">MacTeX</h5>
+<p>如果你安装了 MacTeX，那么使用 <code>TeX Live Utility.app</code> 可以十分方便的安装、更新宏包。</p>
+<h5 id="tex-live-mactex">TeX Live 或 MacTeX</h5>
+<p>如果你使用 TeX Live 或 MacTeX，那么你可以使用 tlmgr 方便的安装宏包。</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>tlmgr install &lt;package1&gt; &lt;package2&gt; ...
+tlmgr remove &lt;package1&gt; &lt;package2&gt; ...
+</pre></div>
+</td></tr></table>
+
+<h4 id="_13">手动安装</h4>
+<p><strong>十分麻烦，不建议使用！</strong>如果你手动安装失败了，一般是第4步弄错了。</p>
+<ol>
+<li>
+<p>在 <a href="http://ctan.org/">ctan</a> 搜索需要的宏包，并下载。</p>
+<p><img alt="download_package_from_ctan" src="https://dn-loggerhead.qbox.me/images/download_package_from_ctan.png" /></p>
+</li>
+<li>
+<p>解压。通常会得到 .ins 文件、.dtx 文件、INSTALL 和 README。如果不存在 .ins 文件，请查看 INSTALL 和 README。</p>
+</li>
+<li>
+<p>将 .ins 文件视作普通 LaTeX 文档打开编译 ，LaTeX 会从 .dtx 文件中抽取出 .sty 文件。如果是通过命令行编译，那么命令是：</p>
+<p><code>bash
+xelatex -shell-escape xxx.ins</code></p>
+</li>
+<li>
+<p>将 .sty 文件放到 LaTeX 发行版能找到的目录下，通常路径含 <code>texmf-local</code> 或 <code>texmf</code>（"Tex and MetaFont" 的缩写，指代 Latex 发行版的目录树）。</p>
+<table>
+<thead>
+<tr>
+<th>发行版</th>
+<th>目录</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MacTeX</td>
+<td><a href="https://www.tug.org/mactex/faq/#qm05">~/Library/texmf/tex/latex</a></td>
+<td>使用 <code>mkdir -p</code> 自行创建</td>
+</tr>
+<tr>
+<td>MiKTEX</td>
+<td>任意目录</td>
+<td>得先<a href="http://docs.miktex.org/manual/localadditions.html#id573803">注册为用户管理的 texmf 目录</a></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>更新 LaTeX 文件名数据库。</p>
+<table>
+<thead>
+<tr>
+<th>发行版</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TEXlive/MacTeX</td>
+<td><code>texhash</code></td>
+</tr>
+<tr>
+<td>MiKTEX</td>
+<td><code>initexmf --update-fndb</code></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+<h1 id="latex_1">如何进一步学习 LaTeX</h1>
+<ul>
+<li>如果遇到问题，上 <a href="http://tex.stackexchange.com/">StackExchange</a> 搜索，几乎你能遇到的问题都能在上面找到答案。</li>
+<li><a href="https://en.wikibooks.org/wiki/LaTeX">LaTeX - Wikibooks</a> 和 <a href="https://www.sharelatex.com/learn">ShareLaTeX guides</a> 都是在线文档，内容详细，示例很多。</li>
+<li><a href="https://tobi.oetiker.ch/lshort/lshort.pdf">The Not So Short Introduction to LaTeX</a> 又叫做 LATEX2ε in 157 minutes，是一本很不错的入门书，内容简短精炼。</li>
+<li><a href="http://book.douban.com/subject/1418351/">TeXbook</a> 是 TeX 语言的作者 Knuth 亲自写的介绍 TeX 基本概念的一本书。</li>
+</ul>
+<hr />
+<h4 id="_14">参考文献</h4>
+<ul>
+<li><a href="https://tobi.oetiker.ch/lshort/lshort.pdf">The Not So Short Introduction to LaTeX</a></li>
+<li><a href="https://www.sharelatex.com/learn">ShareLaTeX guides</a></li>
+<li><a href="https://en.wikibooks.org/wiki/LaTeX">LaTeX - Wikibooks</a></li>
+<li><a href="http://mirror.utexas.edu/ctan/macros/xetex/latex/xecjk/xeCJK.pdf">xeCJK</a></li>
+<li><a href="http://www.maths.tcd.ie/~dwilkins/LaTeXPrimer/Preamble.html">The Preamble of the LaTeX Input file</a></li>
+<li><a href="http://pyroc.at/blog/2013/04/03/cjk-italics/">汉字中的“斜体”</a></li>
+</ul>
+      </div>
+    </article>
+  </section>
+<div id="disqus_thread"></div>
+<script>
+var disqus_config = function () {
+    this.page.identifier = "LaTeX 排版简介--快速入门";
+};
+
+(function() {
+    var d = document, s = d.createElement('script');
+    s.async = true;
+    s.src = "//loggerhead.disqus.com/embed.js";
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+})();
+</script>      </div>
+    </div>
+  </div>
+</div>
+
+ <footer class="page-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-8">
+        <p>
+          &copy;2016&nbsp; <a href="..">loggerhead</a>
+        </p>
+      </div>
+      <div class="col-xs-4">
+        <p class="pull-right">
+          <a href="#" class="back-to-top">
+            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+            回到顶部
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <div class="row hidden-when-phone">
+      <div class="col-xs-8">
+        <p>
+          <a href="http://www.miitbeian.gov.cn/" target="_blank">粤ICP备16007488号</a>
+          &middot; Powered by <a href="https://github.com/getpelican/pelican" target="_blank">Pelican</a>
+        </p>
+
+        <p>
+          本站文章均为原创，并遵循 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh_TW" target="_blank">CC BY-SA 4.0 协议</a>
+        </p>
+      </div><!--/.col-xs-8 -->
+
+      <div class="col-xs-4">
+        <p class="pull-right">
+          <a href="https://www.upyun.com/zh/league.html" target="_blank">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAAtCAMAAAAZUYxJAAAAtFBMVEUAAABPrtxPrtxPrtxPrtxPrtxlZ2ZlZ2ZPrtxlZ2ZRqdRlZ2ZPrtxPrtxPrtxPrtxPrtxlZ2ZPrtxlZ2ZPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxPrtxlZ2ZPrtxPrtxPrtxlZ2ZlZ2ZPrtxlZ2ZlZ2ZPrtxPrtxlZ2ZlZ2ZlZ2ZlZ2ZlZ2ZPrtxPrtxlZ2ZPrtxlZ2ZlZ2ZlZ2ZPrtxPrtxlZ2ZPrtxlZ2bPPWi/AAAAOnRSTlMAgNCQ8aAQcD8fA/FPMevhsDD5wLp1cCHZypmHOwyrooFTGhLh0sSwinlfXfju67yMRyfcooZ4RS0XProUtAAAAZlJREFUSMft02tT4jAUxvHTNtAaobjd3iyUq1zE1V1dr0++//fypMGZCrbw1jG/N2nD8KcTTsmyLOvH6sUC4Tio7fxWyufll1KKqKu0P7fLpy7veUCHlwAAfxMYELsAHKIOtCiMe2TICQxPNqeNq7OjaWNGlX+Ixo4TAxg2p6e+/8jL32PpVZomLnBJWhZdzomNQiBrTJ/x3Y1ej6Q9XQIi0tJwQZUAGC7KlrS8VermhHS/+khuR8U17cRg+bYxTUvePTUtL+5p0iejdIJ5vwCKxqc+3z315IR0wsftLMgwB51Uf+9aqc1B2uf1gYbAapc2x1p+mc4nfDGnOikQE015jje+v6lNyPPaTMgMQJGmXpUuIyBO0tQ9SFdDIumTAf4Tvd0p43CupYsP1eQaB2mBF9oTmKF8WF+dGybNF3fLaZfYYpgLAGbCZOIKg6ehEEK/Gq98R2OIraS6Xqh//zNz1ntmQEgtMgGEbg2HkZet6Z6ndQbAmNr0c+xbZdSa9rATZtRK3l87dcmIqD2duJXYmZNlWZb17b0DTmto7227YPgAAAAASUVORK5CYII=" />
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+    <script src="../theme/js/bag.2.0.2.min.js"></script>
+
+<script id="myscripts">
+bag = new window.Bag();
+
+bag.require([
+    "//cdn.bootcss.com/jquery/2.2.1/jquery.min.js",
+    "//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"
+]);
+
+function load_css(url, done) {
+    var link  = document.createElement('link');
+    link.rel  = 'stylesheet';
+    link.href = url;
+    link.onload = done;
+    document.head.appendChild(link);
+}
+
+function load_js(url, done) {
+    var script = document.createElement('script');
+    script.src = url;
+    script.onload = done;
+    document.body.appendChild(script);
+}
+
+function gestureStart() {
+    for (i = 0; i < metas.length; i++) {
+        if (metas[i].name == "viewport") {
+            metas[i].content = "width=device-width, minimum-scale=0.25, maximum-scale=1.6";
+        }
+    }
+}
+
+(function screen_suit() {
+    var metas = document.getElementsByTagName('meta');
+    var ua = navigator.userAgent;
+    if (ua.match(/iPhone/i)) {
+        for (var i = 0; i < metas.length; i++) {
+            if (metas[i].name == "viewport") {
+                metas[i].content = "width=device-width, minimum-scale=1.0, maximum-scale=1.0";
+            }
+        }
+        document.addEventListener("gesturestart", gestureStart, false);
+    }
+})();
+
+// See https://gist.github.com/vartan/ab195e5a502a47e0c3e5
+(function fix_hover_behavior() {
+    if('ontouchstart' in document.documentElement) {
+        for(var sheetI = document.styleSheets.length - 1; sheetI >= 0; sheetI--) {
+            var sheet = document.styleSheets[sheetI];
+            if(sheet.cssRules) {
+                for(var ruleI = sheet.cssRules.length - 1; ruleI >= 0; ruleI--) {
+                    var rule = sheet.cssRules[ruleI];
+                    if(rule.selectorText) {
+                        rule.selectorText = rule.selectorText.replace(":hover", ":active");
+                    }
+                }
+            }
+        }
+    }
+})();
+
+(function add_class_to_chinese_em(class_name) {
+    var ems = document.getElementsByTagName("em");
+
+    for (var i = 0; i < ems.length; i++) {
+        var text = ems[i].textContent;
+        // if has chinese char
+        if(/.*[\u4e00-\u9fa5]+.*$/.test(text)) {
+            ems[i].className += " " + class_name;
+        }
+    }
+})('chinese');
+
+// IE10 viewport hack for Surface/desktop Windows 8 bug
+(function fix_ie10_viewport_bug() {
+    if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+        bag.require([
+            "//maxcdn.bootstrapcdn.com/css/ie10-viewport-bug-workaround.css",
+            "//maxcdn.bootstrapcdn.com/js/ie10-viewport-bug-workaround.js"
+        ]);
+    }
+})();
+
+(function load_katex_when_need(class_name) {
+    var maths = document.getElementsByClassName(class_name);
+    if (maths.length == 0) {
+        return;
+    }
+
+    bag.require([
+        "//cdn.bootcss.com/KaTeX/0.6.0/katex.min.js"
+    ]).then(function() {
+        for (var i = 0; i < maths.length; i++) {
+            var math = maths[i];
+
+            var displayMode = null;
+            if (math.tagName == "SPAN") {
+                displayMode = false;
+            } else if (math.tagName == "DIV") {
+                displayMode = true;
+            }
+
+            if (displayMode === null) {
+                console.log("Cannot render " + math);
+            } else {
+                try {
+                    katex.render(math.textContent, maths[i], { displayMode: displayMode });
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        }
+    });
+
+    load_css("//cdn.bootcss.com/KaTeX/0.6.0/katex.min.css");
+})("math");
+</script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+  <script>
+  bag.require([
+    "//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js",
+    "//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"
+  ]);
+  </script>
+<![endif]-->
+ 
+</body>
+</html>

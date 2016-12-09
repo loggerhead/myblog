@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block extra_meta %}
+  {% if article.tags %}
+    <meta name="keywords" content="{{ article.tags|join(',')|striptags }}" />
+  {% endif %}
+
+  <meta name="description" content="{{ article.summary|striptags|trim|truncate(255, True)|escape }}" />
+{% endblock %}
+
+{% block title %}
+  {{ article.title }}
+{% endblock %}
+
+{% block content %}
+  <section id="content">
+    <article>
+      <header class="page-header">
+        <h1>
+          <a class="article-title" href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">
+            {{ article.title }}
+          </a>
+        </h1>
+        {% include "includes/article_info.html" %}
+        <hr>
+      </header>
+      <div class="entry-content">
+        {{ article.content }}
+      </div>
+    </article>
+  </section>
+{% endblock %}
+
+{% block content_footer %}
+  {% if ENABLE_DUOSHUO %}
+    {% include 'includes/duoshuo.html'%}
+  {% elif ENABLE_DISQUS %}
+    {% include 'includes/disqus.html'%}
+  {% endif %}
+{% endblock %}
