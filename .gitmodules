@@ -1,0 +1,3 @@
+[submodule "pelican-config/output"]
+	path = pelican-config/output
+	url = https://github.com/loggerhead/blog.loggerhead.me.git
