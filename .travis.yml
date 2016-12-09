@@ -1,17 +1,7 @@
-sudo: required
-
-language: c
-
-env:
-  - BUILD_DIR=dockerize/
-
+sudo: false
 services:
   - docker
-
-before_install:
-  - docker build -t loggerhead/myblog $BUILD_DIR
-
-install: true
-
+install:
+  - docker build -t loggerhead/myblog .
 script:
   - docker run loggerhead/myblog echo "[Travis CI OK]"
