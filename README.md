@@ -19,7 +19,6 @@ docker run -d -p 80:80 -p 443:443 -p 54321:54321 -v /etc/nginx:/etc/nginx -v /va
 
 ```bash
 docker login daocloud.io
-# 必须手动设置最新镜像为 latest
 docker pull daocloud.io/loggerhead/myblog
 ```
 
