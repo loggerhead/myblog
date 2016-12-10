@@ -1,0 +1,11 @@
+myblog:
+  image: daocloud.io/loggerhead/myblog:latest
+  privileged: false
+  restart: always
+  ports:
+  - 80:80
+  - 443:443
+  - 54321:54321
+  volumes:
+  - /etc/nginx:/etc/nginx
+  - /var/www/blog/cert:/var/www/blog/cert
