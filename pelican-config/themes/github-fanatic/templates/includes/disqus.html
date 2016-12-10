@@ -1,14 +1,16 @@
+{%- macro load_disqus(user, title) -%}
 <div id="disqus_thread"></div>
 <script>
 var disqus_config = function () {
-    this.page.identifier = "{{ article.title }}";
+    this.page.identifier = "{{ title }}";
 };
 
 (function() {
     var d = document, s = d.createElement('script');
     s.async = true;
-    s.src = "//{{ DISQUS_USER }}.disqus.com/embed.js";
+    s.src = "//{{ user }}.disqus.com/embed.js";
     s.setAttribute('data-timestamp', +new Date());
     (d.head || d.body).appendChild(s);
 })();
 </script>
+{%- endmacro %}

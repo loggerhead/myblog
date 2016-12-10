@@ -33,8 +33,10 @@
 
 {% block content_footer %}
   {% if ENABLE_DUOSHUO %}
-    {% include 'includes/duoshuo.html'%}
+    {% from 'includes/duoshuo.html' import load_duoshuo %}
+    {{ load_duoshuo(DUOSHUO_USER, article.title, article.url) }}
   {% elif ENABLE_DISQUS %}
-    {% include 'includes/disqus.html'%}
+    {% from 'includes/disqus.html' import load_disqus %}
+    {{ load_disqus(DISQUS_USER, article.title) }}
   {% endif %}
 {% endblock %}

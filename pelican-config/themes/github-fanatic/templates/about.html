@@ -1,88 +1,19 @@
 {% extends "base.html" %}
-{% block css %}
+
+{% block title %}
+  关于 {{ AUTHOR }}
 {% endblock %}
+
 {% block content %}
-{# TODO: finish content
-Book: https://api.douban.com/v2/book/user/66364052/collections
-Movie: no API can use
-#}
-<article>
-    <div id="book">
-        <div class="obssin">
-            <div class="substatus">想读</div>
-            <ul>
-                <li class="aob">
-                    <a href="http://book.douban.com/subject/1124745/" title="C++语言的设计和演化(英文版)" target="_blank"><img src="http://img3.douban.com/spic/s1299693.jpg" class="climg" alt="C++语言的设计和演化(英文版)"></a>
-                </li>
-                <li class="aob">
-                    <a href="http://book.douban.com/subject/26366784/" title="Grokking Algorithms" target="_blank"><img src="http://img3.douban.com/spic/s28284924.jpg" class="climg" alt="Grokking Algorithms"></a>
-                </li>
-            </ul>
-            <div class="clear"></div>
-        </div>
-        <div class="obssin">
-            <div class="substatus">读过</div>
-            <ul>
-                <li class="aob">
-                    <a href="http://book.douban.com/subject/1083156/" title="关键对话" target="_blank"><img src="http://img3.doubanio.com/spic/s10402347.jpg" class="climg" alt="关键对话"></a>
-                </li>
-                <li class="aob">
-                    <a href="http://book.douban.com/subject/3184668/" title="人人都爱经济学" target="_blank"><img src="http://img3.doubanio.com/spic/s3246206.jpg" class="climg" alt="人人都爱经济学"></a>
-                </li>
-            </ul>
-            <div class="clear"></div>
-        </div>
-    </div>
-    <div id="movie">
-        <div class="obssin">
-            <div class="substatus">想看</div>
-            <ul>
-                <li class="aob">
-                    <a href="http://movie.douban.com/subject/24297912/" title="冰血暴 第一季" target="_blank">
-                        <img src="http://img3.douban.com/view/movie_poster_cover/ipst/public/p2173896435.jpg" class="climg" alt="冰血暴 第一季">
-                    </a>
-                </li>
-                <li class="aob">
-                    <a href="http://movie.douban.com/subject/25746375/" title="我是路人甲
-
-I Am Somebody" target="_blank">
-                        <img src="http://img3.douban.com/view/movie_poster_cover/ipst/public/p2252471054.jpg" class="climg" alt="我是路人甲">
-                    </a>
-                </li>
-            </ul>
-            <div class="clear"></div>
-        </div>
-        <div class="obssin">
-            <div class="substatus">看过</div>
-            <ul>
-                <li class="aob">
-                    <a href="http://movie.douban.com/subject/3681358/" title="东之伊甸
-
-东之伊甸 / 东方伊甸园" target="_blank">
-                        <img src="http://img3.doubanio.com/spic/s3842726.jpg" class="climg" alt="东之伊甸">
-                    </a>
-                </li>
-                <li class="aob">
-                    <a href="http://movie.douban.com/subject/26386465/" title="亚人1：冲动
-
-亚人1：冲动 / 亚人 剧场版1" target="_blank">
-                        <img src="http://img3.doubanio.com/view/movie_poster_cover/ipst/public/p2267694939.jpg" class="climg" alt="亚人1：冲动">
-                    </a>
-                </li>
-            </ul>
-            <div class="clear"></div>
-        </div>
-    </div>
-    <div class=".sep20"></div>
-</article>
+  {{ page.content }}
 {% endblock %}
 
-{% block script %}
-{# TODO: comment system
+{% block content_footer %}
   {% if ENABLE_DUOSHUO %}
-    {% include 'includes/duoshuo.html'%}
+    {% from 'includes/duoshuo.html' import load_duoshuo %}
+    {{ load_duoshuo(DUOSHUO_USER, "about", "about") }}
   {% elif ENABLE_DISQUS %}
-    {% include 'includes/disqus.html'%}
+    {% from 'includes/disqus.html' import load_disqus %}
+    {{ load_disqus(DISQUS_USER, "about") }}
   {% endif %}
-#}
 {% endblock %}

@@ -12,7 +12,7 @@ RUN apt-get -y update ;\
     pip install flask supervisor ;\
     mkdir -p /var/www/blog/cert
 
-RUN git clone https://github.com/loggerhead/blog.loggerhead.me.git /var/www/blog/output
+ADD pelican-config/output /var/www/blog/output
 ADD nginx-config /etc/nginx
 ADD update-site /var/www/blog/myblog-update
 

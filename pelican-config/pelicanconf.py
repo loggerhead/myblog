@@ -23,12 +23,14 @@ SITE_DESCRIPTION = "loggerhead的个人博客"
 GOOGLE_SITE_VERIFICATION_CODE = os.environ['GOOGLE_SITE_VERIFICATION_CODE']
 
 PATH = 'content'
+PAGE_URL = '{slug}.html'
+PAGE_SAVE_AS = PAGE_URL
 ARTICLE_URL = 'posts/{slug}.html'
 ARTICLE_SAVE_AS = ARTICLE_URL
 TAG_URL = 'tag/{slug}.html'
 TAG_SAVE_AS = TAG_URL
 TAGS_URL = 'tags/index.html'
-TAGS_SAVE_AS = ''
+TAGS_SAVE_AS = TAGS_URL
 AUTHOR_SAVE_AS = ''
 AUTHORS_SAVE_AS = ''
 
@@ -46,8 +48,7 @@ AUTHOR_FEED_RSS = None
 MENUITEMS = (
     ('首页', 'index.html'),
     ('归档', 'archives.html'),
-    # TODO: finish about.html
-    ('关于', '404.html'),
+    ('关于', 'about.html'),
 )
 
 SOCIAL = (
@@ -75,7 +76,6 @@ DEFAULT_CATEGORY = u'default'
 IGNORE_FILES = ['.*', '_*']
 TEMPLATE_PAGES = {
     "404.html": "404.html",
-    "about.html": "about.html",
 }
 PAGE_PATHS = ['_pages']
 ARTICLE_EXCLUDES = ['_private']
