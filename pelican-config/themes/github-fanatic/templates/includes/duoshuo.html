@@ -1,5 +1,5 @@
-{%- macro load_duoshuo(user, title, url) -%}
-<div class="ds-share" data-thread-key="{{ url }}" data-title="{{ title }}" data-images="/favicon.ico" data-content="{{ title }}" data-url="{{ url }}">
+{%- macro load_duoshuo(user, title) -%}
+<div class="ds-share" data-thread-key="{{ title }}" data-title="{{ title }}" data-images="/favicon.ico" data-content="{{ title }}" data-url="{{ title }}">
     <div class="ds-share-inline">
       <ul  class="ds-share-icons-16">
         <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
@@ -12,7 +12,7 @@
 </div>
 </div>
 
-<div class="ds-thread" data-thread-key="{{ url }}" data-title="{{ title }}" data-url="{{ url }}">
+<div class="ds-thread" data-thread-key="{{ title }}" data-title="{{ title }}" data-url="{{ title }}">
 </div>
 
 <script type="text/javascript">

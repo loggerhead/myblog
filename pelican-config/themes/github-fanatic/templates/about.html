@@ -11,7 +11,7 @@
 {% block content_footer %}
   {% if ENABLE_DUOSHUO %}
     {% from 'includes/duoshuo.html' import load_duoshuo %}
-    {{ load_duoshuo(DUOSHUO_USER, "about", "about") }}
+    {{ load_duoshuo(DUOSHUO_USER, "about") }}
   {% elif ENABLE_DISQUS %}
     {% from 'includes/disqus.html' import load_disqus %}
     {{ load_disqus(DISQUS_USER, "about") }}

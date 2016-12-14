@@ -34,7 +34,7 @@
 {% block content_footer %}
   {% if ENABLE_DUOSHUO %}
     {% from 'includes/duoshuo.html' import load_duoshuo %}
-    {{ load_duoshuo(DUOSHUO_USER, article.title, article.url) }}
+    {{ load_duoshuo(DUOSHUO_USER, article.title) }}
   {% elif ENABLE_DISQUS %}
     {% from 'includes/disqus.html' import load_disqus %}
     {{ load_disqus(DISQUS_USER, article.title) }}
