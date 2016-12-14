@@ -1,0 +1,14 @@
+{%- macro load_google_search_bar(id) -%}
+<form class="navbar-form" role="search" action="https://www.google.com" target="_blank">
+    <div class="input-group">
+        <input type="text" class="search-query form-control" placeholder="搜索博客" name="q">
+        <input type="hidden" name="cx" value="{{ id }}">
+        <input type="hidden" name="ie" value="UTF-8">
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="submit">
+                <span class="glyphicon glyphicon-search"></span>
+            </button>
+        </span>
+    </div>
+</form>
+{%- endmacro %}

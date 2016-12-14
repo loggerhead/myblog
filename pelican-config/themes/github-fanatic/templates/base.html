@@ -28,26 +28,31 @@
       </button>
       <a class="navbar-brand" href="{{ SITEURL }}">{{ SITENAME }}</a>
     </div>
-    <div class="collapse navbar-collapse navbar-ex1-collapse">
+    <div class="navbar-collapse navbar-ex1-collapse collapse">
       <ul class="nav navbar-nav">
       {% for title, link in MENUITEMS %}
-        <li{% if link in (self|string) %} class="active"{% endif %}><a href="{{ SITEURL }}/{{ link }}">{{ title }}</a></li>
-      {% endfor %}
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-      {% if 'tipue_search' in PLUGINS %}
-        <li>
-          <span>
-            <form class="navbar-search" action="{{ SEARCH_URL | default('/search.html') }}">
-              <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input" required>
-            </form>
-          </span>
+        <li{% if link in (self|string) %} class="active"{% endif %}>
+          <a href="{{ SITEURL }}/{{ link }}">{{ title }}</a>
         </li>
-      {% endif %}
-      {% for title, link in SOCIAL %}
-        <li><a href="{{ link }}" target="_blank">{{ title }}</a></li>
       {% endfor %}
       </ul>
+      <div class="navbar-right">
+        <ul class="nav navbar-nav">
+        {% if ENABLE_GOOGLE_SEARCH %}
+          {% from 'includes/google-search.html' import load_google_search_bar %}
+          {{ load_google_search_bar(GOOGLE_CUSTOM_SEARCH_ID) }}
+        {% elif 'tipue_search' in PLUGINS %}
+          <form class="navbar-search" action="{{ SEARCH_URL | default('/search.html') }}">
+            <input type="text" class="search-query" name="q" id="tipue_search_input" required>
+          </form>
+        {% endif %}
+        </ul>
+        <ul class="nav navbar-nav">
+        {% for title, link in SOCIAL %}
+          <li><a href="{{ link }}" target="_blank">{{ title }}</a></li>
+        {% endfor %}
+        </ul>
+      </div>
     </div><!--/.navbar-header -->
   </div><!--/.container -->
 </nav><!--/.navbar -->
