@@ -11,8 +11,7 @@ RUN apt-get -y update ;\
     apt-get clean && rm -r /var/lib/apt/lists/* ;\
     pip install flask supervisor ;\
     mkdir -p /var/www/blog/cert
-
-ADD pelican-config/output /var/www/blog/output
+RUN git clone https://github.com/loggerhead/blog.loggerhead.me.git /var/www/blog/output
 ADD nginx-config /etc/nginx
 ADD update-site /var/www/blog/myblog-update
 
@@ -25,4 +24,3 @@ COPY supervisord.conf /etc/supervisor/supervisord.conf
 VOLUME ["/etc/nginx", "/var/www/blog/cert"]
 
 CMD ["supervisord"]
-
