@@ -29,6 +29,6 @@ docker build --rm -t loggerhead/myblog .
 
 #客户端
 ```bash
+pip install -r pelican-config/requirements.txt
 ln -s scripts/blog.sh /usr/local/bin/blog.sh
 ```
-

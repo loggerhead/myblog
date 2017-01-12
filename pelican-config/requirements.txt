@@ -1,0 +1,5 @@
+pelican==3.6.3
+markdown==2.6.7
+webassets==0.12.1
+pyyaml==3.12
+mdx_del_ins==1.0
