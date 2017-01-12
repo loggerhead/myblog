@@ -11,6 +11,7 @@ if [[ $1 == "upload" ]]; then
 
     git add -A && git commit --amend -m 'update'
     git push -fu origin master
+    curl $BLOG_UPDATE_URL
 elif [[ $1 == "stop" ]] || [[ $1 == "stopserver" ]]; then
     make stopserver
 elif [[ $1 == "make" ]]; then
