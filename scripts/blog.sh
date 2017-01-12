@@ -9,9 +9,9 @@ if [[ $1 == "upload" ]]; then
     make publish
     cd output/
 
-    git add -A && git commit --amend -m 'update'
-    git push -fu origin master
-    curl $BLOG_UPDATE_URL
+    git add -A && git commit -m 'update'
+    git push -u origin master
+    curl http://www.loggerhead.me:54321/coding/push
 elif [[ $1 == "stop" ]] || [[ $1 == "stopserver" ]]; then
     make stopserver
 elif [[ $1 == "make" ]]; then
