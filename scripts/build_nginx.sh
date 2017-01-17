@@ -1,16 +1,19 @@
 #!/bin/bash
 
+# stop on first error
+set -e
+
 # names of latest versions of each package
 NGINX_VERSION=1.11.6
 NPS_VERSION=1.11.33.4
-VERSION_PCRE=pcre-8.38
+VERSION_PCRE=pcre-8.40
 VERSION_NGINX=nginx-$NGINX_VERSION
 VERSION_LIBRESSL=libressl-2.4.4
 VERSION_PAGESPEED=release-${NPS_VERSION}-beta
 PAGESPEED_DIRNAME=ngx_pagespeed-${VERSION_PAGESPEED}
 
 # URLs to the source directories
-SOURCE_PCRE=http://ftp.csx.cam.ac.uk/pub/software/programming/pcre
+SOURCE_PCRE=http://ftp.cs.stanford.edu/pub/exim/pcre
 SOURCE_NGINX=http://nginx.org/download
 SOURCE_LIBRESSL=http://ftp.openbsd.org/pub/OpenBSD/LibreSSL
 SOURCE_PAGESPEED=https://github.com/pagespeed/ngx_pagespeed/archive
@@ -92,7 +95,7 @@ mkdir -p $NGINX_LOG_DIR $NGINX_CACHE_DIR
 
 touch $STATICLIBSSL/.openssl/include/openssl/ssl.h
 echo "Create Nginx one-click deb file at $BPATH/$VERSION_NGINX/nginx-libressl_$NGINX_VERSION-*.deb"
-make \
+make -j $(nproc) \
 && checkinstall --pkgname="nginx-libressl" \
                 --pkgversion="$NGINX_VERSION" \
                 --provides="nginx" \
