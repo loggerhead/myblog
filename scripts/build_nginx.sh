@@ -25,16 +25,19 @@ BPATH=$DIR/build
 STATICLIBSSL=$BPATH/$VERSION_LIBRESSL
 
 # clean out previous compile result
-find $BPATH -mindepth 1 -maxdepth 1 -type d -exec rm -rf {} \;
+if [ -d "$BPATH" ]; then
+    rm -rf $BPATH
+fi
 mkdir -p $BPATH
 cd $BPATH
+
 echo "Download sources"
 echo -n > $DOWNLOAD_LIST
 echo $SOURCE_PCRE/$VERSION_PCRE.tar.gz           >> $DOWNLOAD_LIST
 echo $SOURCE_NGINX/$VERSION_NGINX.tar.gz         >> $DOWNLOAD_LIST
 echo $SOURCE_LIBRESSL/$VERSION_LIBRESSL.tar.gz   >> $DOWNLOAD_LIST
 echo $SOURCE_PAGESPEED/$VERSION_PAGESPEED.tar.gz >> $DOWNLOAD_LIST
-aria2c -c -j20 -Z -i $DOWNLOAD_LIST
+aria2c -q -c -j20 -Z -i $DOWNLOAD_LIST
 echo "Extract Packages"
 tar xzf $VERSION_PCRE.tar.gz
 tar xzf $VERSION_NGINX.tar.gz
@@ -42,7 +45,7 @@ tar xzf $VERSION_LIBRESSL.tar.gz
 
 tar xzf $PAGESPEED_DIRNAME.tar.gz
 cd $PAGESPEED_DIRNAME
-aria2c -c https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz
+aria2c -q -c https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz
 tar xzf ${NPS_VERSION}.tar.gz
 cd $BPATH/../
 
