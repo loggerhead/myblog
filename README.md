@@ -18,7 +18,6 @@ mkdir -p $CERT_HOME
 ## Running
 ```bash
 docker run -d -p 80:80 -p 443:443 -p 54321:54321 \
-    -v /etc/nginx:/etc/nginx \
     -v /var/www/blog/cert:/var/www/blog/cert \
     loggerhead/myblog
 ```
