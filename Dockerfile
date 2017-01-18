@@ -1,25 +1,23 @@
-FROM ubuntu:16.04
-MAINTAINER loggerhead "i@loggerhead.me"
+FROM jfloff/alpine-python:2.7
+MAINTAINER loggerhead "lloggerhead@gmail.com"
 
 ENV HOME /home/root
 WORKDIR /home/root
 
-RUN apt-get -y -qq update ;\
-    apt-get -y -qq install build-essential checkinstall \
-        libgd2-xpm-dev libgeoip-dev libxslt-dev zlib1g-dev \
-        git aria2 python-pip python-dev ;\
-    apt-get clean && rm -r /var/lib/apt/lists/* ;\
+RUN apk update && apk upgrade ;\
+    apk add --no-cache bash git ;\
+    apk add --update ca-certificates openssl ;\
     pip install flask supervisor ;\
-    mkdir -p /var/www/blog/cert
-RUN git clone https://github.com/loggerhead/blog.loggerhead.me.git /var/www/blog/output
+    wget https://github.com/loggerhead/build_nginx/releases/download/latest/nginx.tar.gz ;\
+    tar zxf nginx.tar.gz ;\
+    mv nginx /usr/sbin/nginx ;\
+    mkdir -p /var/www/blog/cert ;\
+    rm nginx.tar.gz
+
 ADD nginx-config /etc/nginx
 ADD update-site /var/www/blog/myblog-update
-
-ADD scripts/build_nginx.sh /home/root/build_nginx.sh
-RUN ["/bin/bash", "/home/root/build_nginx.sh"]
-RUN rm -rf /home/root/build
-
 COPY supervisord.conf /etc/supervisor/supervisord.conf
+RUN git clone https://github.com/loggerhead/blog.loggerhead.me.git /var/www/blog/output
 
 VOLUME ["/etc/nginx", "/var/www/blog/cert"]
 
