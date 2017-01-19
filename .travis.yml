@@ -1,7 +1,5 @@
 sudo: false
 services:
   - docker
-install:
-  - docker build -t loggerhead/myblog .
 script:
-  - docker run loggerhead/myblog echo "[Travis CI OK]"
+  - docker build -t loggerhead/myblog .
