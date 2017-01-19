@@ -1,0 +1,21 @@
+# spec https://support.rackspace.com/how-to/understanding-logrotate-utility/
+/var/log/nginx/*.log {
+    size 10M
+    # 如果日志丢失，不报错继续滚动下一个日志
+    missingok
+    # use date as a suffix of the rotated file
+    dateext
+    compress
+    delaycompress
+    # 保留最多 4 次滚动的日志
+    rotate 4
+    # create new (empty) log files after rotating old ones
+    create
+    # 当日志为空时不进行滚动
+    notifempty
+    sharedscripts
+    # 滚动时需执行的动作
+    postrotate
+        [ ! -f /var/run/nginx/nginx.pid ] || kill -USR1 `cat /var/run/nginx/nginx.pid`
+    endscript
+}
