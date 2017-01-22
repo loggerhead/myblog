@@ -1,8 +1,6 @@
 @import "markdown";
 @import "highlight";
 
-@import "compass/css3";
-@import "compass/css3/flexbox";
 @mixin display-flexbox($value: flex) {
     @if $value == inline-flex {
         display: -webkit-inline-box;

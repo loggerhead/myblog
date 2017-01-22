@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css">
 
 {% set checksum = (THEME_STATIC_DIR + "/css/style.scss") | hash %}
-{% assets filters="compass,cssmin", output="css/style." + checksum + ".css", "css/style.scss" %}
+{% assets filters="scss,cssmin", output="css/style." + checksum + ".css", "css/style.scss" %}
   <link rel="stylesheet" href="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/css/style.{{ checksum }}.css">
 {% endassets %}
