@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORKDIR=${BLOG_WORKDIR-$HOME/myblog}
+WORKDIR=${BLOG_WORKDIR}
 EDITOR=${EDITOR-vim}
 
 cd $WORKDIR

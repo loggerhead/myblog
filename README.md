@@ -25,6 +25,5 @@ scripts/start-server.sh
 # Client
 
 ```bash
-pip install -r pelican-config/requirements.txt
-ln -s scripts/blog.sh /usr/local/bin/blog.sh
+scripts/setup-client.sh
 ```
