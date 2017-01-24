@@ -13,6 +13,7 @@
     ```
 
 2. `sudo scripts/setup-server.sh`
+3. Setup `Secret` in GitHub webhook or `token` in Coding webhook.
 
 ## Running
 

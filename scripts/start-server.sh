@@ -15,6 +15,7 @@ set -o nounset
 
 docker run -d -p 80:80 -p 443:443 -p 54321:54321 \
     -e BLOG_UPDATE_URL=$BLOG_UPDATE_URL          \
+    -e BLOG_WEBHOOK_TOKEN=$BLOG_WEBHOOK_TOKEN    \
     -v /etc/nginx:/etc/nginx                     \
     -v $CERT_DIR:$CERT_DIR                       \
     -v $NGX_LOG_DIR:$NGX_LOG_DIR                 \
