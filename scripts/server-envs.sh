@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-# any HTTP GET or POST on this URL will trigger update
-export BLOG_UPDATE_URL="/coding/push"
+# POST ("application/json") on this URL will trigger update
+export BLOG_UPDATE_URL=
+# BUT also need correct webhook token
 export BLOG_WEBHOOK_TOKEN=
 
 # do NOT modify below environment variables

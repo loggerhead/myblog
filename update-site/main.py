@@ -9,7 +9,7 @@ from flask import Flask, request
 
 app = Flask(__name__)
 WORKDIR = os.path.dirname(os.path.realpath(__file__))
-UPDATE_URL = os.environ.get('BLOG_UPDATE_URL', '/coding/push')
+UPDATE_URL = os.environ['BLOG_UPDATE_URL']
 WEBHOOK_TOKEN = str.encode(os.environ['BLOG_WEBHOOK_TOKEN'])
 
 
