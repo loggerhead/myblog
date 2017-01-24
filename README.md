@@ -14,6 +14,12 @@
 
 2. `sudo scripts/setup-server.sh`
 3. Setup `Secret` in GitHub webhook or `token` in Coding webhook.
+4. Append following environments to `.profile`, `.zshrc` or `.bashrc`:
+
+    ```bash
+    export BLOG_UPDATE_URL=
+    export BLOG_WEBHOOK_TOKEN=
+    ```
 
 ## Running
 
