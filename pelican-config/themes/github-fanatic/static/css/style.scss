@@ -41,7 +41,7 @@ $gray: #999;
 $body-font-color: #333;
 $markdown-body-border-color: #ddd;
 
-$default_font: "SF UI Display", ".PingFang SC", "Helvetica", "Hiragino Sans GB", "Helvetica Neue", "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN", "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC", "Neue Haas Grotesk Text Pro", "Arial Nova", "Segoe UI", "Microsoft YaHei", "Microsoft JhengHei", sans-serif;
+$default_font: "SF UI Display", "PingFang SC", "Hiragino Sans GB", "Helvetica", "Hiragino Sans GB", "Helvetica Neue", "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN", "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC", "Neue Haas Grotesk Text Pro", "Arial Nova", "Segoe UI", "Microsoft YaHei", "Microsoft JhengHei", sans-serif;
 
 $container-width: 1010px;
 // ----------------------------------------------------------------------------
@@ -90,6 +90,7 @@ em.chinese {
     background-color: #fff;
     border: 1px solid $markdown-body-border-color;
     border-radius: 3px;
+    font-family: $default_font;
 
     img {
         max-width: 80%;
