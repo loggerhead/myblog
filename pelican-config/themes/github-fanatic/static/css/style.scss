@@ -279,6 +279,10 @@ span.math {
 
 
 @media (max-width: 767px) {
+    #avatar-in-about {
+        display: none;
+    }
+
     .markdown-body {
         padding: 15px;
 
