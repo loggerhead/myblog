@@ -55,7 +55,7 @@ MENUITEMS = (
 
 SOCIAL = (
     ('GitHub', 'https://github.com/loggerhead'),
-    ('HackerRank', 'https://www.hackerrank.com/loggerhead'),
+    ('Keybase', 'https://keybase.io/loggerhead'),
     ('豆瓣', 'https://douban.com/people/loggerhead'),
 )
 
