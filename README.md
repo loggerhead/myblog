@@ -17,8 +17,8 @@
 4. Append following environments to `.profile`, `.zshrc` or `.bashrc`:
 
     ```bash
-    export BLOG_UPDATE_URL=
-    export BLOG_WEBHOOK_TOKEN=
+    export BLOG_UPDATE_URL="/coding/push"
+    export BLOG_WEBHOOK_TOKEN="YOUR_SECRET_IN_WEBHOOK"
     ```
 
 ## Running
