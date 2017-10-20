@@ -13,6 +13,7 @@ source server-envs.sh
 apt-get install -y logrotate
 mkdir -p /etc/logrotate.d $CERT_DIR $NGX_LOG_DIR $NGX_RUN_DIR $NGX_CACHE_DIR
 cp ../nginx.logrotate /etc/logrotate.d
+cp ../nginx-config/* /etc/nginx
 
 set +o nounset
 if [ "$1" == "hub" ]; then
