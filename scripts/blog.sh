@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 WORKDIR=${BLOG_WORKDIR}
 EDITOR=${EDITOR-vim}
 
@@ -11,7 +13,9 @@ if [[ $1 == "upload" ]]; then
 
     git add -A && git commit -m 'update'
     git push -u origin master
-    curl http://www.loggerhead.me:54321/coding/push
+    FTP_CMD="mirror -R output htdocs; exit"
+    lftp -e "$FTP_CMD" -u "$WWHOST_FTP_USER","$WWHOST_FTP_PASSWORD" "ftp://$WWHOST_IP"
+    # curl http://www.loggerhead.me:54321/coding/push
 elif [[ $1 == "stop" ]] || [[ $1 == "stopserver" ]]; then
     make stopserver
 elif [[ $1 == "make" ]]; then
@@ -24,6 +28,8 @@ elif [[ $1 == "self" ]]; then
     $EDITOR $0
 elif [[ $1 == "dir" ]]; then
     echo -n $WORKDIR
+elif [[ $1 == "server" ]]; then
+    make devserver
 elif [[ -z $1 ]]; then
     make html
     make devserver
@@ -37,4 +43,5 @@ else
     echo -e "\tdiff      Git diff my theme"
     echo -e "\tself      Edit this script by $EDITOR"
     echo -e "\tdir       Print work directory"
+    echo -e "\tserver    Run debug server"
 fi
