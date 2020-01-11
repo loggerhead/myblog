@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Allow: /posts/
+Disallow: /*.md$
+Disallow: /*.txt$
+Disallow: /_
+Disallow: /tag/
+Disallow: /tags/
+Disallow: /theme/
+Disallow: /category/
+Disallow: /404
+Disallow: /archives.html
+Disallow: /categories.html
+Sitemap: https://www.loggerhead.me/sitemap.xml

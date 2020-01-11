@@ -1,0 +1,55 @@
+==================================================================
+https://keybase.io/loggerhead
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://loggerhead.me
+  * I am loggerhead (https://keybase.io/loggerhead) on keybase.
+  * I have a public key ASCW0gT5PoNbkHrVE-vW5u6exOJTV0m76YVr93ERB60H5go
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "01203ad922ed21ce65a710725034f31b3da14bc0260d80baf37511a7340de62edbad0a",
+      "host": "keybase.io",
+      "kid": "012096d204f93e835b907ad513ebd6e6ee9ec4e2535749bbe9856bf7711107ad07e60a",
+      "uid": "27580435bf4857ce7a6dc76132860819",
+      "username": "loggerhead"
+    },
+    "merkle_root": {
+      "ctime": 1507278036,
+      "hash": "6ac314327188c92d19c12b4bd0d56575b86c9f712b2b8649033d16078a9281bec7fc86177d8982b3e182141a3eee59a63c407e3c4860adb55994dda1e285e0e0",
+      "hash_meta": "b74888a0da403c478881334586c79958979653c4c192f3fe6824044b9ae7c800",
+      "seqno": 1524055
+    },
+    "service": {
+      "hostname": "loggerhead.me",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 1
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "1.0.31"
+  },
+  "ctime": 1507278052,
+  "expire_in": 504576000,
+  "prev": "3dbb85a3a8d4a5af37b81d5c53890e4766184f367163b78d492fba682784b17c",
+  "seqno": 11,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgltIE+T6DW5B61RPr1ubunsTiU1dJu+mFa/dxEQetB+YKp3BheWxvYWTFA0h7ImJvZHkiOnsia2V5Ijp7ImVsZGVzdF9raWQiOiIwMTIwM2FkOTIyZWQyMWNlNjVhNzEwNzI1MDM0ZjMxYjNkYTE0YmMwMjYwZDgwYmFmMzc1MTFhNzM0MGRlNjJlZGJhZDBhIiwiaG9zdCI6ImtleWJhc2UuaW8iLCJraWQiOiIwMTIwOTZkMjA0ZjkzZTgzNWI5MDdhZDUxM2ViZDZlNmVlOWVjNGUyNTM1NzQ5YmJlOTg1NmJmNzcxMTEwN2FkMDdlNjBhIiwidWlkIjoiMjc1ODA0MzViZjQ4NTdjZTdhNmRjNzYxMzI4NjA4MTkiLCJ1c2VybmFtZSI6ImxvZ2dlcmhlYWQifSwibWVya2xlX3Jvb3QiOnsiY3RpbWUiOjE1MDcyNzgwMzYsImhhc2giOiI2YWMzMTQzMjcxODhjOTJkMTljMTJiNGJkMGQ1NjU3NWI4NmM5ZjcxMmIyYjg2NDkwMzNkMTYwNzhhOTI4MWJlYzdmYzg2MTc3ZDg5ODJiM2UxODIxNDFhM2VlZTU5YTYzYzQwN2UzYzQ4NjBhZGI1NTk5NGRkYTFlMjg1ZTBlMCIsImhhc2hfbWV0YSI6ImI3NDg4OGEwZGE0MDNjNDc4ODgxMzM0NTg2Yzc5OTU4OTc5NjUzYzRjMTkyZjNmZTY4MjQwNDRiOWFlN2M4MDAiLCJzZXFubyI6MTUyNDA1NX0sInNlcnZpY2UiOnsiaG9zdG5hbWUiOiJsb2dnZXJoZWFkLm1lIiwicHJvdG9jb2wiOiJodHRwczoifSwidHlwZSI6IndlYl9zZXJ2aWNlX2JpbmRpbmciLCJ2ZXJzaW9uIjoxfSwiY2xpZW50Ijp7Im5hbWUiOiJrZXliYXNlLmlvIGdvIGNsaWVudCIsInZlcnNpb24iOiIxLjAuMzEifSwiY3RpbWUiOjE1MDcyNzgwNTIsImV4cGlyZV9pbiI6NTA0NTc2MDAwLCJwcmV2IjoiM2RiYjg1YTNhOGQ0YTVhZjM3YjgxZDVjNTM4OTBlNDc2NjE4NGYzNjcxNjNiNzhkNDkyZmJhNjgyNzg0YjE3YyIsInNlcW5vIjoxMSwidGFnIjoic2lnbmF0dXJlIn2jc2lnxEC1XV5CZWH3f53SmRxv1H60/9y6IZLUbwB6sWx0iz/p5grmqVX/XChvrCzYapRDkGloOICtRIwPNS+ddurqNMgBqHNpZ190eXBlIKRoYXNogqR0eXBlCKV2YWx1ZcQgiBxk2zjCVeNSRIGvZUWiJ87adXQe504a91p7jn08/V+jdGFnzQICp3ZlcnNpb24B
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/loggerhead
+
+==================================================================
