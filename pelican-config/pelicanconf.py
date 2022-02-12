@@ -65,7 +65,7 @@ MD_EXTENSIONS = ['toc', 'del_ins', 'tables',
 
 MATH_JAX = {
     'show_menu': False,
-    'source': "//cdn.bootcss.com/mathjax/2.6.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+    'source': "//cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
 }
 
 THEME = "themes/github-fanatic"

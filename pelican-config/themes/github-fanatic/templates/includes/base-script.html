@@ -6,8 +6,8 @@
 bag = new window.Bag();
 
 bag.require([
-    "//cdn.bootcss.com/jquery/2.2.1/jquery.min.js",
-    "//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"
+    "https//cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js",
+    "https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"
 ]);
 
 function load_css(url, done) {
@@ -92,7 +92,7 @@ function gestureStart() {
     }
 
     bag.require([
-        "//cdn.bootcss.com/KaTeX/0.6.0/katex.min.js"
+        "https://cdn.jsdelivr.net/npm/katex@0.6.0/dist/katex.min.js"
     ]).then(function() {
         for (var i = 0; i < maths.length; i++) {
             var math = maths[i];
@@ -116,7 +116,7 @@ function gestureStart() {
         }
     });
 
-    load_css("//cdn.bootcss.com/KaTeX/0.6.0/katex.min.css");
+    load_css("https://cdn.jsdelivr.net/npm/katex@0.6.0/dist/katex.min.css");
 })("math");
 </script>
 
@@ -124,8 +124,8 @@ function gestureStart() {
 <!--[if lt IE 9]>
   <script>
   bag.require([
-    "//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js",
-    "//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"
+    "https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js",
+    "https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"
   ]);
   </script>
 <![endif]-->

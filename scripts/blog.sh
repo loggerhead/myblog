@@ -14,6 +14,7 @@ if [[ $1 == "upload" ]]; then
     git add -A && git commit -m 'update'
     git push -u origin master
     FTP_CMD="mirror -R output htdocs; exit"
+    cd ..
     lftp -e "$FTP_CMD" -u "$WWHOST_FTP_USER","$WWHOST_FTP_PASSWORD" "ftp://$WWHOST_IP"
     # curl http://www.loggerhead.me:54321/coding/push
 elif [[ $1 == "stop" ]] || [[ $1 == "stopserver" ]]; then

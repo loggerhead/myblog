@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
 
 {% set checksum = (THEME_STATIC_DIR + "/css/style.scss") | hash %}
 {% assets filters="scss,cssmin", output="css/style." + checksum + ".css", "css/style.scss" %}
